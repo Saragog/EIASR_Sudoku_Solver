@@ -64,6 +64,8 @@ BEGIN_MESSAGE_MAP(CSudoku_SolverDlg, CDialogEx)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
+	ON_BN_CLICKED(IDOK, &CSudoku_SolverDlg::OnBnClickedOk)
+	ON_BN_CLICKED(IDC_LOAD_BUTTON, &CSudoku_SolverDlg::OnBnClickedLoadButton)
 END_MESSAGE_MAP()
 
 
@@ -152,3 +154,18 @@ HCURSOR CSudoku_SolverDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
+
+
+void CSudoku_SolverDlg::OnBnClickedOk()
+{
+	// TODO: Add your control notification handler code here
+	CDialogEx::OnOK();
+}
+
+
+void CSudoku_SolverDlg::OnBnClickedLoadButton()
+{
+	CFileDialog fOpenDlg(TRUE,L"jpg",NULL, OFN_FILEMUSTEXIST,NULL,this);
+	
+	// TODO: Add your control notification handler code here
+}
