@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include<opencv2/opencv.hpp> 
 
 // CSudoku_SolverDlg dialog
 class CSudoku_SolverDlg : public CDialogEx
@@ -31,6 +32,8 @@ protected:
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
 	DECLARE_MESSAGE_MAP()
+
+	std::string path; //plik wejsciowy
 public:
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnBnClickedLoadButton();

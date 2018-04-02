@@ -6,7 +6,7 @@
 #include "Sudoku_Solver.h"
 #include "Sudoku_SolverDlg.h"
 #include "afxdialogex.h"
-#include<opencv2/opencv.hpp>
+
 #include<conio.h>
 
 #ifdef _DEBUG
@@ -139,6 +139,7 @@ void CSudoku_SolverDlg::OnPaint()
 		GetClientRect(&rect);
 		int x = (rect.Width() - cxIcon + 1) / 2;
 		int y = (rect.Height() - cyIcon + 1) / 2;
+		
 
 		// Draw the icon
 		dc.DrawIcon(x, y, m_hIcon);
@@ -167,9 +168,11 @@ void CSudoku_SolverDlg::OnBnClickedOk()
 	cv::Mat imgCanny;           // Canny edge image
 
 
-	imgOriginal = cv::imread("image.png");          // open image
+	
+	imgOriginal = cv::imread(cv::String(path));
 
 	if (imgOriginal.empty()) {                                  // if unable to open image
+		//TODO messege box
 		std::cout << "error: image not read from file\n\n";     // show error message on command line
 		_getch();                                               // may have to modify this line if not using Windows
 		return;                                              // and exit program
@@ -187,11 +190,12 @@ void CSudoku_SolverDlg::OnBnClickedOk()
 		82,                         // low threshold
 		164);                       // high threshold
 
+	
 									// declare windows
 	cv::namedWindow("imgOriginal", CV_WINDOW_AUTOSIZE);     // note: you can use CV_WINDOW_NORMAL which allows resizing the window
 	cv::namedWindow("imgCanny", CV_WINDOW_AUTOSIZE);        // or CV_WINDOW_AUTOSIZE for a fixed size window matching the resolution of the image
 															// CV_WINDOW_AUTOSIZE is the default
-	cv::imshow("imgOriginal", imgOriginal);     // show windows
+	cv::imshow("imgOriginal", imgBlurred);     // show windows
 	cv::imshow("imgCanny", imgCanny);
 
 	cv::waitKey(0);                 // hold windows open until user presses a key
@@ -201,4 +205,9 @@ void CSudoku_SolverDlg::OnBnClickedOk()
 void CSudoku_SolverDlg::OnBnClickedLoadButton()
 {
 	CFileDialog fOpenDlg(TRUE, L"jpg", NULL, OFN_FILEMUSTEXIST, NULL, this);
+	if (fOpenDlg.DoModal() == IDOK)
+	{
+		CT2CA convertedAnsiString(fOpenDlg.GetPathName());
+		path = std::string(convertedAnsiString);
+	}
 }
