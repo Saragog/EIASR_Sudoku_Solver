@@ -6,6 +6,7 @@
 #include "Sudoku_Solver.h"
 #include "Sudoku_SolverDlg.h"
 #include "afxdialogex.h"
+#include <vector>
 
 #include<conio.h>
 
@@ -13,7 +14,7 @@
 #define new DEBUG_NEW
 #endif
 
-
+using namespace cv;
 // CAboutDlg dialog used for App About
 
 class CAboutDlg : public CDialogEx
@@ -165,8 +166,15 @@ void CSudoku_SolverDlg::OnBnClickedOk()
 	cv::Mat imgOriginal;        // input image
 	cv::Mat imgGrayscale;       // grayscale of input image
 	cv::Mat imgBlurred;         // intermediate blured image
-	cv::Mat imgCanny;           // Canny edge image
+	//cv::Mat imgCanny;           // Canny edge image
+	cv::Mat imgTreshold;		// tresholded image
+	cv::Mat imgBitwiseNot;		// bitwise not image
+	cv::Mat imgDilate;			// dilated image
+	cv::Mat imgBiggestBlob;		// biggest blob image
+	cv::Mat imgEroded;			// eroded back image
+	cv::Mat imgDetectedLines;	// detected lines image
 
+	cv::Mat imgCrossingPoints[16]; // crossing points images
 
 	
 	imgOriginal = cv::imread(cv::String(path));
@@ -182,32 +190,191 @@ void CSudoku_SolverDlg::OnBnClickedOk()
 
 	cv::GaussianBlur(imgGrayscale,          // input image
 		imgBlurred,                         // output image
-		cv::Size(5, 5),                     // smoothing window width and height in pixels
-		1.5);                               // sigma value, determines how much the image will be blurred
+		cv::Size(11, 11),					// smoothing window width and height in pixels
+		0);                               // sigma value, determines how much the image will be blurred
 
+	cv::adaptiveThreshold(imgBlurred, imgTreshold, 255, cv::ADAPTIVE_THRESH_MEAN_C, cv::THRESH_BINARY, 5, 2);
+	
+	/*
 	cv::Canny(imgBlurred,           // input image
 		imgCanny,                   // output image
 		82,                         // low threshold
 		164);                       // high threshold
+	*/
 
+	cv::bitwise_not(imgTreshold, imgBitwiseNot);
+
+	cv::Mat kernel = (cv::Mat_<uchar>(3, 3) << 0, 1, 0, 1, 1, 1, 0, 1, 0);
+	cv::dilate(imgBitwiseNot, imgDilate, kernel);
+
+	// _____
+
+	imgBiggestBlob = imgDilate.clone();
+
+	int count = 0;
+	int max = -1;
+
+	Point maxPt;
+
+	for (int y = 0; y<imgBiggestBlob.size().height; y++)
+	{
+		uchar *row = imgBiggestBlob.ptr(y);
+		for (int x = 0; x<imgBiggestBlob.size().width; x++)
+		{
+			if (row[x] >= 128)
+			{
+
+				int area = floodFill(imgBiggestBlob, Point(x, y), CV_RGB(0, 0, 64));
+
+				if (area>max)
+				{
+					maxPt = Point(x, y);
+					max = area;
+				}
+			}
+		}
+
+	}
+
+	floodFill(imgBiggestBlob, maxPt, CV_RGB(255, 255, 255));
+
+
+	for (int y = 0; y<imgBiggestBlob.size().height; y++)
+	{
+		uchar *row = imgBiggestBlob.ptr(y);
+		for (int x = 0; x<imgBiggestBlob.size().width; x++)
+		{
+			if (row[x] == 64 && x != maxPt.x && y != maxPt.y)
+			{
+				int area = floodFill(imgBiggestBlob, Point(x, y), CV_RGB(0, 0, 0));
+			}
+		}
+	}
+
+	erode(imgBiggestBlob, imgEroded, kernel);
+
+	cutImageWithPoints(imgEroded, imgCrossingPoints);
+
+	std::vector<std::vector<Point>> contours;
+
+	findContours(imgEroded, contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE, Point(0, 0));
 	
+	std::vector<Point> corners;
+	findCorners(contours, corners);
+	for (int circleIndex = 0; circleIndex < 4; circleIndex++)
+		circle(imgOriginal, corners[circleIndex], 5, CV_RGB(255, 0, 0), -1);
+
+
+
+	//drawContours(imgOriginal, contours, -1, CV_RGB(255, 0, 0));
+
+	imgDetectedLines = imgEroded.clone();
+
+	std::vector<Vec2f> lines;
+	HoughLines(imgDetectedLines, lines, 1, CV_PI / 180, 200);
+
+	/*
+	for (int i = 0; i<lines.size(); i++)
+	{
+		drawLine(lines[i], imgDetectedLines, CV_RGB(0, 0, 128));
+	}
+	*/
+
+
+	// _____
 									// declare windows
-	cv::namedWindow("imgOriginal", CV_WINDOW_AUTOSIZE);     // note: you can use CV_WINDOW_NORMAL which allows resizing the window
-	cv::namedWindow("imgCanny", CV_WINDOW_AUTOSIZE);        // or CV_WINDOW_AUTOSIZE for a fixed size window matching the resolution of the image
+	cv::namedWindow("imgOriginal", CV_WINDOW_NORMAL);     // note: you can use CV_WINDOW_NORMAL which allows resizing the window
+	//cv::namedWindow("imgCanny", CV_WINDOW_AUTOSIZE);        // or CV_WINDOW_AUTOSIZE for a fixed size window matching the resolution of the image
 															// CV_WINDOW_AUTOSIZE is the default
-	cv::imshow("imgOriginal", imgBlurred);     // show windows
-	cv::imshow("imgCanny", imgCanny);
+	cv::namedWindow("imgBlurred", CV_WINDOW_NORMAL);
+	cv::namedWindow("ingTreshold", CV_WINDOW_NORMAL);
+	cv::namedWindow("imgBitwiseNot", CV_WINDOW_NORMAL);
+	cv::namedWindow("imgDilate", CV_WINDOW_NORMAL);
+	cv::namedWindow("imgBiggestBlob", CV_WINDOW_NORMAL);
+	cv::namedWindow("imgEroded", CV_WINDOW_NORMAL);
+	cv::namedWindow("imgDetectedLines", CV_WINDOW_NORMAL);
+	cv::namedWindow("imgFirstPartOfImage", CV_WINDOW_NORMAL);
+	
+	cv::imshow("imgOriginal", imgOriginal);
+	cv::imshow("imgBlurred", imgBlurred);     // show windows
+	cv::imshow("ingTreshold", imgTreshold);
+	cv::imshow("imgBitwiseNot", imgBitwiseNot);
+	cv::imshow("imgDilate", imgDilate);
+	cv::imshow("imgBiggestBlob", imgBiggestBlob);
+	cv::imshow("imgEroded", imgEroded);
+	cv::imshow("imgDetectedLines", imgDetectedLines);
+	cv::imshow("imgFirstPartOfImage", imgCrossingPoints[5]);
+
+	//
+	//cv::imshow("imgFirstPartOfImage", contours);
+
+
+	//cv::imshow("imgCanny", imgCanny);
 
 	cv::waitKey(0);                 // hold windows open until user presses a key
 	return;
 }
 
+void drawLine(cv::Vec2f line, cv::Mat &img, cv::Scalar rgb)
+{
+	if (line[1] != 0)
+	{
+		float m = -1 / tan(line[1]);
+
+		float c = line[0] / sin(line[1]);
+
+		cv::line(img, Point(0, c), Point(img.size().width, m*img.size().width + c), rgb);
+	}
+	else
+	{
+		cv::line(img, Point(line[0], 0), Point(line[0], img.size().height), rgb);
+	}
+
+}
+
 void CSudoku_SolverDlg::OnBnClickedLoadButton()
 {
-	CFileDialog fOpenDlg(TRUE, L"jpg", NULL, OFN_FILEMUSTEXIST, NULL, this);
+	CFileDialog fOpenDlg(TRUE, NULL, NULL, OFN_FILEMUSTEXIST, NULL, this);
 	if (fOpenDlg.DoModal() == IDOK)
 	{
 		CT2CA convertedAnsiString(fOpenDlg.GetPathName());
 		path = std::string(convertedAnsiString);
 	}
+}
+
+void cutImageWithPoints(cv::Mat imageToBeCut, cv::Mat* imageParts)
+{
+	int yDimSize = imageToBeCut.size().height;
+	int xDimSize = imageToBeCut.size().width;
+	for (int row = 0; row < 3; row++)
+	{
+		for (int col = 0; col < 3; col++)
+		{
+			cv::Rect rect = cv::Rect(0 + col * xDimSize / 4, 0 + row * yDimSize / 4, xDimSize / 4, yDimSize / 4);
+			imageParts[row * 3 + col] = cv::Mat(imageToBeCut, rect).clone();
+		}
+	}
+
+
+
+}
+
+void findCorners(std::vector<std::vector<Point>> contours, std::vector<Point> &corners)
+{	
+	corners.push_back(Point(contours[0][0]));							// upper left corner
+	for (int step = 0; step < 3; step++) corners.push_back(Point(contours[0][0]));	// upper right / down left / down right corners
+
+	int size = contours[0].size();
+	for (int i = 0; i < size; i++)
+	{
+		if (contours[0][i].x + contours[0][i].y < corners[0].x + corners[0].y)
+			corners[0] = Point(contours[0][i]);
+		else if (contours[0][i].x - contours[0][i].y > corners[1].x - corners[1].y)
+			corners[1] = Point(contours[0][i]);
+		else if (contours[0][i].y - contours[0][i].x > corners[2].y - corners[2].x)
+			corners[2] = Point(contours[0][i]);
+		else if (contours[0][i].x + contours[0][i].y > corners[3].x + corners[3].y)
+			corners[3] = Point(contours[0][i]);
+	}
+
 }
