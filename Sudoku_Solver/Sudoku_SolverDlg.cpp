@@ -173,6 +173,7 @@ void CSudoku_SolverDlg::OnBnClickedOk()
 	cv::Mat imgBiggestBlob;		// biggest blob image
 	cv::Mat imgEroded;			// eroded back image
 	cv::Mat imgDetectedLines;	// detected lines image
+	cv::Mat imgPerspective;	// detected lines image
 
 	cv::Mat imgCrossingPoints[16]; // crossing points images
 
@@ -193,7 +194,7 @@ void CSudoku_SolverDlg::OnBnClickedOk()
 		cv::Size(11, 11),					// smoothing window width and height in pixels
 		0);                               // sigma value, determines how much the image will be blurred
 
-	cv::adaptiveThreshold(imgBlurred, imgTreshold, 255, cv::ADAPTIVE_THRESH_MEAN_C, cv::THRESH_BINARY, 5, 2);
+	cv::adaptiveThreshold(imgBlurred, imgTreshold, 255, cv::ADAPTIVE_THRESH_MEAN_C, cv::THRESH_BINARY, 5, 1.5);
 	
 	/*
 	cv::Canny(imgBlurred,           // input image
@@ -250,6 +251,10 @@ void CSudoku_SolverDlg::OnBnClickedOk()
 			}
 		}
 	}
+	cv::dilate(imgBiggestBlob, imgBiggestBlob, kernel);
+	cv::dilate(imgBiggestBlob, imgBiggestBlob, kernel);
+	cv::dilate(imgBiggestBlob, imgBiggestBlob, kernel);
+	//TODO przeskalowywaæ obrazek rozna rozdzielczosc = rozne dzialanie dilude i innych
 
 	erode(imgBiggestBlob, imgEroded, kernel);
 
@@ -260,10 +265,18 @@ void CSudoku_SolverDlg::OnBnClickedOk()
 	findContours(imgEroded, contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE, Point(0, 0));
 	
 	std::vector<Point> corners;
+	Point2f cornersf[4];
 	findCorners(contours, corners);
 	for (int circleIndex = 0; circleIndex < 4; circleIndex++)
-		circle(imgOriginal, corners[circleIndex], 5, CV_RGB(255, 0, 0), -1);
+	{
+		circle(imgOriginal, corners[circleIndex], 20, CV_RGB(255, 0, 0), -1);
+		cornersf[circleIndex] = Point2f(corners[circleIndex]);
+	}
+	
+	Point2f dst[] = { Point2f(0,0),Point2f(1024,0), Point2f(0,1024),Point2f(1024,1024) };
 
+	Mat M = getPerspectiveTransform(cornersf, dst);
+	warpPerspective(imgOriginal, imgPerspective, M, Size(1024, 1024));
 
 
 	//drawContours(imgOriginal, contours, -1, CV_RGB(255, 0, 0));
@@ -271,7 +284,7 @@ void CSudoku_SolverDlg::OnBnClickedOk()
 	imgDetectedLines = imgEroded.clone();
 
 	std::vector<Vec2f> lines;
-	HoughLines(imgDetectedLines, lines, 1, CV_PI / 180, 200);
+	//HoughLines(imgDetectedLines, lines, 1, CV_PI / 180, 200);
 
 	/*
 	for (int i = 0; i<lines.size(); i++)
@@ -303,7 +316,7 @@ void CSudoku_SolverDlg::OnBnClickedOk()
 	cv::imshow("imgBiggestBlob", imgBiggestBlob);
 	cv::imshow("imgEroded", imgEroded);
 	cv::imshow("imgDetectedLines", imgDetectedLines);
-	cv::imshow("imgFirstPartOfImage", imgCrossingPoints[5]);
+	cv::imshow("imgFirstPartOfImage", imgPerspective);
 
 	//
 	//cv::imshow("imgFirstPartOfImage", contours);
@@ -311,7 +324,7 @@ void CSudoku_SolverDlg::OnBnClickedOk()
 
 	//cv::imshow("imgCanny", imgCanny);
 
-	cv::waitKey(0);                 // hold windows open until user presses a key
+	//cv::waitKey(0);                 // hold windows open until user presses a key
 	return;
 }
 
