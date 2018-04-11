@@ -194,19 +194,25 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="DigitRecognizer.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
+    <ClInclude Include="SudokuImageReader.h" />
+    <ClInclude Include="SudokuProblemSolver.h" />
     <ClInclude Include="Sudoku_Solver.h" />
     <ClInclude Include="Sudoku_SolverDlg.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="DigitRecognizer.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="SudokuImageReader.cpp" />
+    <ClCompile Include="SudokuProblemSolver.cpp" />
     <ClCompile Include="Sudoku_Solver.cpp" />
     <ClCompile Include="Sudoku_SolverDlg.cpp" />
   </ItemGroup>

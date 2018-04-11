@@ -6,6 +6,8 @@
 
 #include<opencv2/opencv.hpp> 
 #include <vector>
+#include "SudokuImageReader.h"
+#include "SudokuProblemSolver.h"
 
 
 // CSudoku_SolverDlg dialog
@@ -36,6 +38,9 @@ protected:
 	DECLARE_MESSAGE_MAP()
 
 	std::string path; //plik wejsciowy
+	SudokuImageReader sudokuImageReader; // reads sudoku problem from an image
+	SudokuProblemSolver sudokuProblemSolver; // solves a given sudoku problem
+
 public:
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnBnClickedLoadButton();
