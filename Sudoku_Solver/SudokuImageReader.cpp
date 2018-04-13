@@ -36,7 +36,8 @@ int** SudokuImageReader::readSudokuFromImage(String path)
 	cv::Mat imgDetectedLines;	// detected lines image
 	cv::Mat imgPerspective;	// detected lines image
 
-	cv::Mat imgCrossingPoints[16]; // crossing points images
+	//cv::Mat imgCrossingPoints[16]; // crossing points images
+	cv::Mat** puzzleSquareDigitsImages; // images of where the digits should be
 
 	imgOriginal = cv::imread(cv::String(path));
 
@@ -118,7 +119,7 @@ int** SudokuImageReader::readSudokuFromImage(String path)
 
 	erode(imgBiggestBlob, imgEroded, kernel);
 
-	cutImageWithPoints(imgEroded, imgCrossingPoints);
+	//cutImageWithPoints(imgEroded, imgCrossingPoints);
 
 	std::vector<std::vector<Point>> contours;
 
@@ -137,6 +138,9 @@ int** SudokuImageReader::readSudokuFromImage(String path)
 
 	Mat M = getPerspectiveTransform(cornersf, dst);
 	warpPerspective(imgOriginal, imgPerspective, M, Size(1024, 1024));
+
+
+	puzzleSquareDigitsImages = cutPuzzleImageIntoDigitsImages(imgEroded);
 
 
 	//drawContours(imgOriginal, contours, -1, CV_RGB(255, 0, 0));
@@ -213,18 +217,23 @@ void SudokuImageReader::drawLine(cv::Vec2f line, cv::Mat &img, cv::Scalar rgb)
 
 }
 
-void SudokuImageReader::cutImageWithPoints(cv::Mat imageToBeCut, cv::Mat* imageParts)
+Mat** cutPuzzleImageIntoDigitsImages(cv::Mat imageToBeCut)
 {
+	cv::Mat digitsImages[9][9];
 	int yDimSize = imageToBeCut.size().height;
 	int xDimSize = imageToBeCut.size().width;
-	for (int row = 0; row < 3; row++)
+	int yDimIncrease = yDimSize / 9;
+	int xDimIncrease = xDimSize / 9;
+
+	for (int row = 0; row < 9; row++)
 	{
-		for (int col = 0; col < 3; col++)
+		for (int col = 0; col < 9; col++)
 		{
-			cv::Rect rect = cv::Rect(0 + col * xDimSize / 4, 0 + row * yDimSize / 4, xDimSize / 4, yDimSize / 4);
-			imageParts[row * 3 + col] = cv::Mat(imageToBeCut, rect).clone();
+			cv::Rect rect = cv::Rect(0 + col * xDimIncrease, 0 + row * yDimIncrease, xDimIncrease, yDimIncrease);
+			digitsImages[row][col] = cv::Mat(imageToBeCut, rect).clone();
 		}
 	}
+	return digitsImages;
 }
 
 void SudokuImageReader::findCorners(std::vector<std::vector<Point>> contours, std::vector<Point> &corners)

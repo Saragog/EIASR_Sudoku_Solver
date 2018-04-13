@@ -15,7 +15,7 @@ public:
 private:
 	int** initializeSudokuProblem();
 	void drawLine(cv::Vec2f line, cv::Mat &img, cv::Scalar rgb = CV_RGB(0, 0, 255));
-	void cutImageWithPoints(cv::Mat imageToBeCut, cv::Mat* imageParts);
+	cv::Mat** cutPuzzleImageIntoDigitsImages(cv::Mat imageToBeCut);
 	void findCorners(std::vector<std::vector<cv::Point>> contours, std::vector<cv::Point>&);
 };
 
