@@ -3,7 +3,8 @@
 #define MAX_NUM_IMAGES    60000
 
 #include<opencv2/opencv.hpp>
-#include<opencv2\ml.hpp>
+#include<opencv2/ml.hpp>
+
 
 /*
 TODO
@@ -17,18 +18,19 @@ public:
 
 	~DigitRecognizer();
 
-	bool train(char* trainPath, char* labelsPath);
+	bool train(cv::String trainPath);
 
-	int classify(cv::Mat img);
+	int classify(cv::Mat img); //przyjmuje kolorowe obrazy
 
-	private:
-		cv::Mat preprocessImage(cv::Mat img);
+private:
+	cv::Mat preprocessImage(cv::Mat img);
+	void addTrainingImage(cv::Mat* trainingImages, cv::Mat img);
+	void prepareTraining(cv::Mat* trainingImages, cv::Mat* classificationInts, cv::String path);
 
-		int readFlippedInteger(FILE *fp);
 
-	private:
-		//ml::KNearest *knn;
-		int numRows, numCols, numImages;
+private:
+	cv::Ptr<cv::ml::KNearest> classifier;
+	int numRows, numCols, numImages;
 
 };
 

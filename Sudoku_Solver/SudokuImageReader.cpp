@@ -4,6 +4,9 @@
 
 using namespace cv;
 
+#define FLAT_IMAGE_WIDTH 120*9
+#define FLAT_IMAGE_HEIGHT 120*9
+
 SudokuImageReader::SudokuImageReader()
 {
 
@@ -38,7 +41,9 @@ int** SudokuImageReader::readSudokuFromImage(String path)
 
 	cv::Mat imgCrossingPoints[16]; // crossing points images
 
-	imgOriginal = cv::imread(cv::String(path));
+	//cv::ml::TrainData::create()
+	//imgGrayscale.
+	imgOriginal = cv::imread(path);
 
 	if (imgOriginal.empty()) {                                  // if unable to open image
 																//TODO messege box
@@ -133,10 +138,10 @@ int** SudokuImageReader::readSudokuFromImage(String path)
 		cornersf[circleIndex] = Point2f(corners[circleIndex]);
 	}
 
-	Point2f dst[] = { Point2f(0,0),Point2f(1024,0), Point2f(0,1024),Point2f(1024,1024) };
+	Point2f dst[] = { Point2f(0,0),Point2f(FLAT_IMAGE_WIDTH,0), Point2f(0,FLAT_IMAGE_HEIGHT),Point2f(FLAT_IMAGE_WIDTH,FLAT_IMAGE_HEIGHT) }; //1080/1080
 
 	Mat M = getPerspectiveTransform(cornersf, dst);
-	warpPerspective(imgOriginal, imgPerspective, M, Size(1024, 1024));
+	warpPerspective(imgOriginal, imgPerspective, M, Size(FLAT_IMAGE_WIDTH, FLAT_IMAGE_HEIGHT));
 
 
 	//drawContours(imgOriginal, contours, -1, CV_RGB(255, 0, 0));
