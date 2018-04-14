@@ -74,6 +74,7 @@ int** SudokuImageReader::readSudokuFromImage(String path)
 
 	cv::Mat kernel = (cv::Mat_<uchar>(3, 3) << 0, 1, 0, 1, 1, 1, 0, 1, 0);
 	cv::dilate(imgBitwiseNot, imgDilate, kernel);
+	
 
 	// _____
 
