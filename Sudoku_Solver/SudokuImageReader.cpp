@@ -42,6 +42,8 @@ int** SudokuImageReader::readSudokuFromImage(String path)
 
 	//cv::Mat imgCrossingPoints[16]; // crossing points images
 	cv::Mat** puzzleSquareDigitsImages; // images of where the digits should be
+	cv::Mat** imgThresholdDigitsImages;	// images of thresholded digits images
+	cv::Mat	  imgThresholdPerspective; // 
 
 	//cv::ml::TrainData::create()
 	//imgGrayscale.
@@ -151,9 +153,15 @@ int** SudokuImageReader::readSudokuFromImage(String path)
 
 	puzzleSquareDigitsImages = cutPuzzleImageIntoDigitsImages(imgPerspective); // cuts puzzle into ditits images
 
+	prepareDigitImagesForDetection(puzzleSquareDigitsImages);
+
+	warpPerspective(imgTreshold, imgThresholdPerspective, M, Size(FLAT_IMAGE_WIDTH, FLAT_IMAGE_HEIGHT));
+
+	imgThresholdDigitsImages = cutPuzzleImageIntoDigitsImages(imgThresholdPerspective);
+
 	// TODO using each of the images and ditit recognizer for digit recognition
 
-
+	//puzzleSquareDigitsImages[0][3] = digitRecognizer.preprocessImage(puzzleSquareDigitsImages[0][3]);
 
 	//drawContours(imgOriginal, contours, -1, CV_RGB(255, 0, 0));
 
@@ -184,6 +192,8 @@ int** SudokuImageReader::readSudokuFromImage(String path)
 	//cv::namedWindow("imgDetectedLines", CV_WINDOW_NORMAL);
 	cv::namedWindow("imgPerspective", CV_WINDOW_NORMAL);
 	cv::namedWindow("imgDigitImage", CV_WINDOW_NORMAL);
+	cv::namedWindow("imgThresholdPerspective", CV_WINDOW_NORMAL);
+	cv::namedWindow("imgThresholdDigitsImages", CV_WINDOW_NORMAL);
 
 	cv::imshow("imgOriginal", imgOriginal);
 	//cv::imshow("imgBlurred", imgBlurred);     // show windows
@@ -194,8 +204,9 @@ int** SudokuImageReader::readSudokuFromImage(String path)
 	//cv::imshow("imgEroded", imgEroded);
 	//cv::imshow("imgDetectedLines", imgDetectedLines);
 	cv::imshow("imgPerspective", imgPerspective);
-	cv::imshow("imgDigitImage", puzzleSquareDigitsImages[0][0]);
-
+	cv::imshow("imgDigitImage", puzzleSquareDigitsImages[0][3]);
+	cv::imshow("imgThresholdPerspective", imgThresholdPerspective);
+	cv::imshow("imgThresholdDigitsImages", imgThresholdDigitsImages[0][3]);
 
 	// ________
 
@@ -232,6 +243,132 @@ void SudokuImageReader::drawLine(cv::Vec2f line, cv::Mat &img, cv::Scalar rgb)
 
 }
 
+void SudokuImageReader::prepareDigitImagesForDetection(cv::Mat** puzzleSquareDigitImages)
+{
+	for (int row = 0; row < 9; row++)
+		for (int col = 0; col < 9; col++)
+		{
+			cv::cvtColor(puzzleSquareDigitImages[row][col], puzzleSquareDigitImages[row][col], CV_BGR2GRAY);       // convert to grayscale
+
+			cv::GaussianBlur(puzzleSquareDigitImages[row][col],         // input image
+				puzzleSquareDigitImages[row][col],						// output image
+				cv::Size(11, 11),										// smoothing window width and height in pixels
+				0);														// sigma value, determines how much the image will be blurred
+
+
+			cv::adaptiveThreshold(puzzleSquareDigitImages[row][col], puzzleSquareDigitImages[row][col],
+				255, cv::ADAPTIVE_THRESH_MEAN_C, cv::THRESH_BINARY, 5, 1.5);
+			
+
+			cv::Mat kernel = (cv::Mat_<uchar>(3, 3) << 0, 1, 0, 1, 1, 1, 0, 1, 0);
+
+			cv::bitwise_not(puzzleSquareDigitImages[row][col], puzzleSquareDigitImages[row][col]);
+			cv::dilate(puzzleSquareDigitImages[row][col], puzzleSquareDigitImages[row][col], kernel);
+			removeBorderFromImage(puzzleSquareDigitImages[row][col]);
+
+			std::vector<std::vector<Point>> contours;
+			
+
+			findContours(puzzleSquareDigitImages[row][col], contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE, Point(0, 0));
+			if (!contours.empty())
+			{
+				cv::Moments m = moments(contours[0], true);
+
+				int middleX = (int)(m.m10 / m.m00), middleY = (int)(m.m01 / m.m00);
+
+				int halfOfHeight = puzzleSquareDigitImages[row][col].size().height / 2;
+				int halfOfWidth = puzzleSquareDigitImages[row][col].size().width / 2;
+
+				int deltaX = halfOfWidth - middleX;
+				int deltaY = halfOfHeight - middleY;
+
+				Mat translationMatrix = (Mat_<double>(2, 3) << 1, 0, deltaX, 0, 1, deltaY);
+				warpAffine(puzzleSquareDigitImages[row][col], puzzleSquareDigitImages[row][col], translationMatrix, puzzleSquareDigitImages[row][col].size());
+			}
+
+
+			//convertColourImagesToGrayScale(puzzleSquareDigitImages[row][col]);
+			//blurColourImagesToGrayScale(puzzleSquareDigitImages);
+			//thresholdDigitImages(puzzleSquareDigitImages);
+			//dilateDigitImages(puzzleSquareDigitImages);
+			//erodeDigitImages(puzzleSquareDigitImages);
+			//removeBorders(puzzleSquareDigitImages);
+		}
+
+}
+
+/*
+void SudokuImageReader::convertColourImagesToGrayScale(cv::Mat** puzzleSquareDigitImages)
+{
+
+			cv::cvtColor(puzzleSquareDigitImages[row][col], puzzleSquareDigitImages[row][col], CV_BGR2GRAY);       // convert to grayscale
+}
+
+void SudokuImageReader::blurColourImagesToGrayScale(cv::Mat** puzzleSquareDigitImages)
+{
+	for (int row = 0; row < 9; row++)
+		for (int col = 0; col < 9; col++)
+			cv::GaussianBlur(puzzleSquareDigitImages[row][col],         // input image
+				puzzleSquareDigitImages[row][col],						// output image
+				cv::Size(11, 11),										// smoothing window width and height in pixels
+				0);														// sigma value, determines how much the image will be blurred
+}
+
+void SudokuImageReader::thresholdDigitImages(cv::Mat** puzzleSquareDigitImages)
+{
+	cv::Mat temp;
+	for (int row = 0; row < 9; row++)
+		for (int col = 0; col < 9; col++)
+		{
+			cv::adaptiveThreshold(puzzleSquareDigitImages[row][col], temp,
+				255, cv::ADAPTIVE_THRESH_MEAN_C, cv::THRESH_BINARY, 5, 1.5);
+			puzzleSquareDigitImages[row][col] = temp;
+		}
+
+}
+
+void SudokuImageReader::dilateDigitImages(cv::Mat** puzzleSquareDigitImages)
+{
+	cv::Mat kernel = (cv::Mat_<uchar>(3, 3) << 0, 1, 0, 1, 1, 1, 0, 1, 0);
+	for (int row = 0; row < 9; row++)
+		for (int col = 0; col < 9; col++)
+		{
+			cv::bitwise_not(puzzleSquareDigitImages[row][col], puzzleSquareDigitImages[row][col]);
+			cv::dilate(puzzleSquareDigitImages[row][col], puzzleSquareDigitImages[row][col], kernel);
+		}
+}
+
+void SudokuImageReader::erodeDigitImages(cv::Mat** puzzleSquareDigitImages)
+{
+	cv::Mat kernel = (cv::Mat_<uchar>(3, 3) << 0, 1, 0, 1, 1, 1, 0, 1, 0);
+	for (int row = 0; row < 9; row++)
+		for (int col = 0; col < 9; col++)
+			erode(puzzleSquareDigitImages[row][col], puzzleSquareDigitImages[row][col], kernel);
+}
+
+void SudokuImageReader::removeBorders(cv::Mat** puzzleSquareDigitImages)
+{
+	for (int row = 0; row < 9; row++)
+		for (int col = 0; col < 9; col++)
+			removeBorderFromImage(puzzleSquareDigitImages[row][col]);
+}
+*/
+void SudokuImageReader::removeBorderFromImage(cv::Mat puzzleSquareDigitImage)
+{
+	int xDimSize = puzzleSquareDigitImage.size().width;
+	int yDimSize = puzzleSquareDigitImage.size().height;
+
+	for (int y = 0; y < yDimSize; y++)
+	{
+		uchar *row = puzzleSquareDigitImage.ptr(y);
+		for (int x = 0; x < xDimSize; x++)
+			if (x == 10 && y >= 10 && y <= yDimSize - 10) x = xDimSize - 10;
+			else if (row[x] == 255)
+				floodFill(puzzleSquareDigitImage, Point(x, y), CV_RGB(0, 0, 0));
+	}
+}
+
+
 Mat** SudokuImageReader::cutPuzzleImageIntoDigitsImages(cv::Mat imageToBeCut)
 {
 	cv::Mat** digitsImages = new cv::Mat*[9];
@@ -244,11 +381,27 @@ Mat** SudokuImageReader::cutPuzzleImageIntoDigitsImages(cv::Mat imageToBeCut)
 	int yDimIncrease = yDimSize / 9;
 	int xDimIncrease = xDimSize / 9;
 
+	int upperIndentation, leftIndentation, rightIndentation, bottomIndentation;
+
 	for (int row = 0; row < 9; row++)
 	{
-		for (int col = 0; col < 9; col++)
+		for (int col = 0, 
+			upperIndentation = 20,
+			leftIndentation = 20,
+			rightIndentation = 20,
+			bottomIndentation = 20;
+			col < 9; col++, 
+			upperIndentation = 20, leftIndentation = 20, rightIndentation = 20, bottomIndentation = 20)
 		{
-			cv::Rect rect = cv::Rect(0 + col * xDimIncrease, 0 + row * yDimIncrease, xDimIncrease, yDimIncrease);
+			if (row == 0) upperIndentation = 0;
+			if (col == 0) leftIndentation = 0;
+			if (col == 8) rightIndentation = 0;
+			if (row == 8) bottomIndentation = 0;
+			
+			cv::Rect rect = cv::Rect(0 + col * xDimIncrease - leftIndentation,
+									 0 + row * yDimIncrease - upperIndentation,
+									 xDimIncrease + leftIndentation + rightIndentation,
+									 yDimIncrease + upperIndentation + bottomIndentation);
 			digitsImages[row][col] = cv::Mat(imageToBeCut, rect).clone();
 		}
 	}
