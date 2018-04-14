@@ -21,9 +21,9 @@ public:
 	bool train(cv::String trainPath);
 
 	int classify(cv::Mat img); //przyjmuje kolorowe obrazy
+	cv::Mat preprocessImage(cv::Mat img);
 
 private:
-	cv::Mat preprocessImage(cv::Mat img);
 	void addTrainingImage(cv::Mat* trainingImages, cv::Mat img);
 	void prepareTraining(cv::Mat* trainingImages, cv::Mat* classificationInts, cv::String path);
 
