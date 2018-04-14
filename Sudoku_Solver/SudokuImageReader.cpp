@@ -19,9 +19,9 @@ SudokuImageReader::~SudokuImageReader()
 /*
 Reads the sudoku problem from an image under given path
 */
-int** SudokuImageReader::readSudokuFromImage(String path)
+Mat** SudokuImageReader::readSudokuFromImage(String path)
 {
-	int** sudokuProblem = initializeSudokuProblem();
+	//int** sudokuProblem = initializeSudokuProblem();
 
 	// read from image
 
@@ -165,9 +165,9 @@ int** SudokuImageReader::readSudokuFromImage(String path)
 
 	//drawContours(imgOriginal, contours, -1, CV_RGB(255, 0, 0));
 
-	imgDetectedLines = imgEroded.clone();
+	//imgDetectedLines = imgEroded.clone();
 
-	std::vector<Vec2f> lines;
+	//std::vector<Vec2f> lines;
 	//HoughLines(imgDetectedLines, lines, 1, CV_PI / 180, 200);
 
 	/*
@@ -210,7 +210,7 @@ int** SudokuImageReader::readSudokuFromImage(String path)
 
 	// ________
 
-	return sudokuProblem;
+	return puzzleSquareDigitsImages;
 }
 
 int** SudokuImageReader::initializeSudokuProblem()

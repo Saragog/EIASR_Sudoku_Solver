@@ -7,6 +7,7 @@
 #include "Sudoku_SolverDlg.h"
 #include "afxdialogex.h"
 #include <vector>
+#include <string>
 
 #include<conio.h>
 
@@ -164,10 +165,14 @@ HCURSOR CSudoku_SolverDlg::OnQueryDragIcon()
 
 void CSudoku_SolverDlg::OnBnClickedOk()
 {
-	int** sudokuProblem = sudokuImageReader.readSudokuFromImage(path);
+	digitRecognizer.train("F:\\programowanie\\sudoku_solver\\x64\\Debug\\train_data"); 
+	Mat** sudokuProblem = sudokuImageReader.readSudokuFromImage(path);
 	if (sudokuProblem != NULL)
 	{
-		sudokuProblemSolver.solveSudokuProblem(sudokuProblem);
+		int a = digitRecognizer.classify(sudokuProblem[0][3]);
+		putText(sudokuProblem[0][3], std::to_string(a), Point(10, 40), cv::FONT_HERSHEY_COMPLEX, 1, CV_RGB(0, 0, 64));
+		cv::imshow("imgThresholdDigitsImages", sudokuProblem[0][3]);
+		//sudokuProblemSolver.solveSudokuProblem(sudokuProblem);
 	}
 	// TODO show sudoku solution
 	// TODO clean the sudoku problem 2d array somewhere (delete)

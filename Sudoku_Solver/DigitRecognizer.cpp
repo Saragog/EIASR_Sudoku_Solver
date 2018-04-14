@@ -32,11 +32,25 @@ bool DigitRecognizer::train(cv::String path)
 
 int DigitRecognizer::classify(Mat img)
 {
-	Mat matImageFlattened = preprocessImage(img);
+	Mat matImageFlattened = preprocessClassImage(img);
 	Mat matResult(0, 0, CV_32F);
 	classifier->findNearest(matImageFlattened, 1, matResult);
 	float result = matResult.at<float>(0, 0);
 	return int(result);
+}
+
+cv::Mat DigitRecognizer::preprocessClassImage(cv::Mat img)
+{
+	Mat imgResized;
+	
+
+	resize(img, imgResized, cv::Size(RESIZED_IMAGE_WIDTH, RESIZED_IMAGE_HEIGHT));
+	cv::bitwise_not(imgResized, imgResized);
+	Mat matImageFloat;
+	imgResized.convertTo(matImageFloat, CV_32FC1);
+	Mat matImageFlattenedFloat = matImageFloat.reshape(1, 1);
+
+	return matImageFlattenedFloat;
 }
 
 Mat DigitRecognizer::preprocessImage(Mat img)
@@ -80,7 +94,7 @@ void DigitRecognizer::prepareTraining(cv::Mat * trainingImages, cv::Mat * classi
 
 		for (int a = 0; a < filenames.size(); ++a)
 		{
-			Mat src = imread(filenames[i]);
+			Mat src = imread(filenames[a]);
 			if (src.empty())
 			{
 				std::cout << "error: image not read from file\n\n";

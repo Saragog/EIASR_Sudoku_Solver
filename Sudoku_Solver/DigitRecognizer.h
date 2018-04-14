@@ -21,12 +21,12 @@ public:
 	bool train(cv::String trainPath);
 
 	int classify(cv::Mat img); //przyjmuje kolorowe obrazy
-	cv::Mat preprocessImage(cv::Mat img);
+	cv::Mat preprocessClassImage(cv::Mat img);
 
 private:
 	void addTrainingImage(cv::Mat* trainingImages, cv::Mat img);
 	void prepareTraining(cv::Mat* trainingImages, cv::Mat* classificationInts, cv::String path);
-
+	cv::Mat preprocessImage(cv::Mat img);
 
 private:
 	cv::Ptr<cv::ml::KNearest> classifier;

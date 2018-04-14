@@ -9,13 +9,13 @@ class SudokuImageReader
 public:
 	SudokuImageReader();
 	~SudokuImageReader();
-	int** readSudokuFromImage(cv::String path);
+	cv::Mat** readSudokuFromImage(cv::String path);
 
 
 
 private:
 
-	DigitRecognizer digitRecognizer;
+	
 	int** initializeSudokuProblem();
 	void drawLine(cv::Vec2f line, cv::Mat &img, cv::Scalar rgb = CV_RGB(0, 0, 255));
 	cv::Mat** cutPuzzleImageIntoDigitsImages(cv::Mat imageToBeCut);
