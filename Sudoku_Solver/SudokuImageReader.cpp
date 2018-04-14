@@ -37,6 +37,7 @@ int** SudokuImageReader::readSudokuFromImage(String path)
 	cv::Mat imgBiggestBlob;		// biggest blob image
 	cv::Mat imgEroded;			// eroded back image
 	cv::Mat imgDetectedLines;	// detected lines image
+	cv::Mat imgDetectedCorners; // detected corners of sudoku puzzle
 	cv::Mat imgPerspective;	// detected lines image
 
 	//cv::Mat imgCrossingPoints[16]; // crossing points images
@@ -133,9 +134,11 @@ int** SudokuImageReader::readSudokuFromImage(String path)
 	std::vector<Point> corners;
 	Point2f cornersf[4];
 	findCorners(contours, corners);
+	imgDetectedCorners = imgOriginal.clone();
+
 	for (int circleIndex = 0; circleIndex < 4; circleIndex++)
 	{
-		circle(imgOriginal, corners[circleIndex], 20, CV_RGB(255, 0, 0), -1);
+		circle(imgDetectedCorners, corners[circleIndex], 20, CV_RGB(255, 0, 0), -1);
 		cornersf[circleIndex] = Point2f(corners[circleIndex]);
 	}
 
@@ -145,7 +148,10 @@ int** SudokuImageReader::readSudokuFromImage(String path)
 	warpPerspective(imgOriginal, imgPerspective, M, Size(FLAT_IMAGE_WIDTH, FLAT_IMAGE_HEIGHT));
 
 
-	puzzleSquareDigitsImages = cutPuzzleImageIntoDigitsImages(imgEroded);
+	puzzleSquareDigitsImages = cutPuzzleImageIntoDigitsImages(imgPerspective); // cuts puzzle into ditits images
+
+	// TODO using each of the images and ditit recognizer for digit recognition
+
 
 
 	//drawContours(imgOriginal, contours, -1, CV_RGB(255, 0, 0));
@@ -168,24 +174,27 @@ int** SudokuImageReader::readSudokuFromImage(String path)
 	cv::namedWindow("imgOriginal", CV_WINDOW_NORMAL);     // note: you can use CV_WINDOW_NORMAL which allows resizing the window
 														  //cv::namedWindow("imgCanny", CV_WINDOW_AUTOSIZE);        // or CV_WINDOW_AUTOSIZE for a fixed size window matching the resolution of the image
 														  // CV_WINDOW_AUTOSIZE is the default
-	cv::namedWindow("imgBlurred", CV_WINDOW_NORMAL);
-	cv::namedWindow("ingTreshold", CV_WINDOW_NORMAL);
-	cv::namedWindow("imgBitwiseNot", CV_WINDOW_NORMAL);
-	cv::namedWindow("imgDilate", CV_WINDOW_NORMAL);
-	cv::namedWindow("imgBiggestBlob", CV_WINDOW_NORMAL);
-	cv::namedWindow("imgEroded", CV_WINDOW_NORMAL);
-	cv::namedWindow("imgDetectedLines", CV_WINDOW_NORMAL);
-	cv::namedWindow("imgFirstPartOfImage", CV_WINDOW_NORMAL);
+	//cv::namedWindow("imgBlurred", CV_WINDOW_NORMAL);
+	//cv::namedWindow("ingTreshold", CV_WINDOW_NORMAL);
+	//cv::namedWindow("imgBitwiseNot", CV_WINDOW_NORMAL);
+	//cv::namedWindow("imgDilate", CV_WINDOW_NORMAL);
+	//cv::namedWindow("imgBiggestBlob", CV_WINDOW_NORMAL);
+	//cv::namedWindow("imgEroded", CV_WINDOW_NORMAL);
+	//cv::namedWindow("imgDetectedLines", CV_WINDOW_NORMAL);
+	cv::namedWindow("imgPerspective", CV_WINDOW_NORMAL);
+	cv::namedWindow("imgDigitImage", CV_WINDOW_NORMAL);
 
 	cv::imshow("imgOriginal", imgOriginal);
-	cv::imshow("imgBlurred", imgBlurred);     // show windows
-	cv::imshow("ingTreshold", imgTreshold);
-	cv::imshow("imgBitwiseNot", imgBitwiseNot);
-	cv::imshow("imgDilate", imgDilate);
-	cv::imshow("imgBiggestBlob", imgBiggestBlob);
-	cv::imshow("imgEroded", imgEroded);
-	cv::imshow("imgDetectedLines", imgDetectedLines);
-	cv::imshow("imgFirstPartOfImage", imgPerspective);
+	//cv::imshow("imgBlurred", imgBlurred);     // show windows
+	//cv::imshow("ingTreshold", imgTreshold);
+	//cv::imshow("imgBitwiseNot", imgBitwiseNot);
+	//cv::imshow("imgDilate", imgDilate);
+	//cv::imshow("imgBiggestBlob", imgBiggestBlob);
+	//cv::imshow("imgEroded", imgEroded);
+	//cv::imshow("imgDetectedLines", imgDetectedLines);
+	cv::imshow("imgPerspective", imgPerspective);
+	cv::imshow("imgDigitImage", puzzleSquareDigitsImages[0][0]);
+
 
 	// ________
 
@@ -222,9 +231,13 @@ void SudokuImageReader::drawLine(cv::Vec2f line, cv::Mat &img, cv::Scalar rgb)
 
 }
 
-Mat** cutPuzzleImageIntoDigitsImages(cv::Mat imageToBeCut)
+Mat** SudokuImageReader::cutPuzzleImageIntoDigitsImages(cv::Mat imageToBeCut)
 {
-	cv::Mat digitsImages[9][9];
+	cv::Mat** digitsImages = new cv::Mat*[9];
+	//cv::Mat digitsImages[9][9];
+	for (int row = 0; row < 9; row++)
+		digitsImages[row] = new cv::Mat[9]();
+
 	int yDimSize = imageToBeCut.size().height;
 	int xDimSize = imageToBeCut.size().width;
 	int yDimIncrease = yDimSize / 9;
@@ -238,6 +251,9 @@ Mat** cutPuzzleImageIntoDigitsImages(cv::Mat imageToBeCut)
 			digitsImages[row][col] = cv::Mat(imageToBeCut, rect).clone();
 		}
 	}
+
+	// TODO remember to clean that digitsImages array !!!
+
 	return digitsImages;
 }
 

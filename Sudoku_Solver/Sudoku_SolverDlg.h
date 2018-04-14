@@ -8,6 +8,7 @@
 #include <vector>
 #include "SudokuImageReader.h"
 #include "SudokuProblemSolver.h"
+#include "DigitRecognizer.h"
 
 
 // CSudoku_SolverDlg dialog
@@ -37,16 +38,14 @@ protected:
 	afx_msg HCURSOR OnQueryDragIcon();
 	DECLARE_MESSAGE_MAP()
 
-	std::string path; //plik wejsciowy
-	SudokuImageReader sudokuImageReader; // reads sudoku problem from an image
-	SudokuProblemSolver sudokuProblemSolver; // solves a given sudoku problem
+private:
+	std::string path;							//plik wejsciowy
+	SudokuImageReader sudokuImageReader;		// reads sudoku problem from an image
+	SudokuProblemSolver sudokuProblemSolver;	// solves a given sudoku problem
+	DigitRecognizer digitRecognizer;			// a machine learning model that can read digits from images
 
 public:
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnBnClickedLoadButton();
 
 };
-
-void drawLine(cv::Vec2f line, cv::Mat &img, cv::Scalar rgb = CV_RGB(0, 0, 255));
-void cutImageWithPoints(cv::Mat imageToBeCut, cv::Mat* imageParts);
-void findCorners(std::vector<std::vector<cv::Point>> contours, std::vector<cv::Point>&);
