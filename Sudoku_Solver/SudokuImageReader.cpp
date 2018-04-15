@@ -264,6 +264,9 @@ void SudokuImageReader::prepareDigitImagesForDetection(cv::Mat** puzzleSquareDig
 
 			cv::bitwise_not(puzzleSquareDigitImages[row][col], puzzleSquareDigitImages[row][col]);
 			cv::dilate(puzzleSquareDigitImages[row][col], puzzleSquareDigitImages[row][col], kernel);
+			cv::dilate(puzzleSquareDigitImages[row][col], puzzleSquareDigitImages[row][col], kernel);
+			cv::dilate(puzzleSquareDigitImages[row][col], puzzleSquareDigitImages[row][col], kernel);
+			cv::dilate(puzzleSquareDigitImages[row][col], puzzleSquareDigitImages[row][col], kernel); //TODO porawic to jakos
 			removeBorderFromImage(puzzleSquareDigitImages[row][col]);
 
 			std::vector<std::vector<Point>> contours;
