@@ -9,6 +9,7 @@
 #include "SudokuImageReader.h"
 #include "SudokuProblemSolver.h"
 #include "DigitRecognizer.h"
+#include "SudokuSolver.h"
 
 
 // CSudoku_SolverDlg dialog
@@ -39,10 +40,9 @@ protected:
 	DECLARE_MESSAGE_MAP()
 
 private:
-	std::string path;							//plik wejsciowy
-	SudokuImageReader sudokuImageReader;		// reads sudoku problem from an image
-	SudokuProblemSolver sudokuProblemSolver;	// solves a given sudoku problem
-	DigitRecognizer digitRecognizer;			// a machine learning model that can read digits from images
+	std::string path;							// plik wejsciowy
+	SudokuSolver solver;						// solver that does all processes needed for solving the problem
+
 
 public:
 	afx_msg void OnBnClickedOk();

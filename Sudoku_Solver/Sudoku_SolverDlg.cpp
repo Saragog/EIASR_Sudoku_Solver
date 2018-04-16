@@ -57,8 +57,6 @@ CSudoku_SolverDlg::CSudoku_SolverDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(IDD_SUDOKU_SOLVER_DIALOG, pParent)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
-	sudokuImageReader = SudokuImageReader();
-	sudokuProblemSolver = SudokuProblemSolver();
 }
 
 void CSudoku_SolverDlg::DoDataExchange(CDataExchange* pDX)
@@ -165,17 +163,7 @@ HCURSOR CSudoku_SolverDlg::OnQueryDragIcon()
 
 void CSudoku_SolverDlg::OnBnClickedOk()
 {
-	digitRecognizer.train("train_data"); 
-	Mat** sudokuProblem = sudokuImageReader.readSudokuFromImage(path);
-	if (sudokuProblem != NULL)
-	{
-		int a = digitRecognizer.classify(sudokuProblem[1][0]);
-		putText(sudokuProblem[1][0], std::to_string(a), Point(10, 40), cv::FONT_HERSHEY_COMPLEX, 1, CV_RGB(0, 0, 64));
-		cv::imshow("imgThresholdDigitsImages", sudokuProblem[1][0]);
-		//sudokuProblemSolver.solveSudokuProblem(sudokuProblem);
-	}
-	// TODO show sudoku solution
-	// TODO clean the sudoku problem 2d array somewhere (delete)
+	solver.solveProblem(path);
 	return;
 }
 

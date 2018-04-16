@@ -39,6 +39,19 @@ int DigitRecognizer::classify(Mat img)
 	return int(result);
 }
 
+void DigitRecognizer::classifyAll(cv::Mat** images) // testing function for classification of 2d arrays of images
+{
+	for (int row = 0; row < 9; row++)
+		for (int col = 0; col < 9; col++)
+		{
+			int a = classify(images[row][col]);
+			putText(images[row][col], std::to_string(a), Point(10, 40), cv::FONT_HERSHEY_COMPLEX, 1, CV_RGB(0, 0, 64));
+		}
+
+	return;
+}
+
+
 cv::Mat DigitRecognizer::preprocessClassImage(cv::Mat img)
 {
 	Mat imgResized;

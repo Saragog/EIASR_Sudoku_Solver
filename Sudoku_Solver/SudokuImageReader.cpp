@@ -190,10 +190,10 @@ Mat** SudokuImageReader::readSudokuFromImage(String path)
 	//cv::namedWindow("imgBiggestBlob", CV_WINDOW_NORMAL);
 	//cv::namedWindow("imgEroded", CV_WINDOW_NORMAL);
 	//cv::namedWindow("imgDetectedLines", CV_WINDOW_NORMAL);
-	cv::namedWindow("imgPerspective", CV_WINDOW_NORMAL);
-	cv::namedWindow("imgDigitImage", CV_WINDOW_NORMAL);
-	cv::namedWindow("imgThresholdPerspective", CV_WINDOW_NORMAL);
-	cv::namedWindow("imgThresholdDigitsImages", CV_WINDOW_NORMAL);
+	cv::namedWindow("beforeRemovingBorder", CV_WINDOW_NORMAL);
+	cv::namedWindow("afterRemovingBorder", CV_WINDOW_NORMAL);
+	cv::namedWindow("afterThresholding", CV_WINDOW_NORMAL);
+	cv::namedWindow("beforeThresholding", CV_WINDOW_NORMAL);
 
 	cv::imshow("imgOriginal", imgOriginal);
 	//cv::imshow("imgBlurred", imgBlurred);     // show windows
@@ -203,14 +203,39 @@ Mat** SudokuImageReader::readSudokuFromImage(String path)
 	//cv::imshow("imgBiggestBlob", imgBiggestBlob);
 	//cv::imshow("imgEroded", imgEroded);
 	//cv::imshow("imgDetectedLines", imgDetectedLines);
-	cv::imshow("imgPerspective", imgPerspective);
-	cv::imshow("imgDigitImage", puzzleSquareDigitsImages[0][3]);
-	cv::imshow("imgThresholdPerspective", imgThresholdPerspective);
-	cv::imshow("imgThresholdDigitsImages", imgThresholdDigitsImages[0][3]);
+	//cv::imshow("imgPerspective", imgPerspective);
+	//cv::imshow("imgDigitImage", puzzleSquareDigitsImages[0][3]);
+	//cv::imshow("imgThresholdPerspective", imgThresholdPerspective);
+	//cv::imshow("imgThresholdDigitsImages", imgThresholdDigitsImages[0][3]);
 
 	// ________
 
 	return puzzleSquareDigitsImages;
+}
+
+Mat SudokuImageReader::joinImagesIntoOne(cv::Mat** images) // testing method for showing progress in whole image
+{
+	Mat wholeImage(1080, 1080, images[0][0].type());
+	Mat workInProgress;
+	std::vector<Mat> rows;
+	std::vector<Mat> cols;
+	if (images != NULL)
+	{
+		for (int row = 0; row < 9; row++)
+		{
+			cols.clear();
+			for (int col = 0; col < 9; col++)
+				cols.push_back(images[row][col]);
+			rows.push_back(Mat());
+			hconcat(cols, rows[row]);
+		}
+		vconcat(rows, wholeImage);
+		cv::imshow("imgThresholdDigitsImages", wholeImage);
+	}
+	// TODO show sudoku solution
+	// TODO clean the sudoku problem 2d array somewhere (delete)
+	return wholeImage;
+
 }
 
 int** SudokuImageReader::initializeSudokuProblem()
@@ -256,18 +281,43 @@ void SudokuImageReader::prepareDigitImagesForDetection(cv::Mat** puzzleSquareDig
 				0);														// sigma value, determines how much the image will be blurred
 
 
-			cv::adaptiveThreshold(puzzleSquareDigitImages[row][col], puzzleSquareDigitImages[row][col],
-				255, cv::ADAPTIVE_THRESH_MEAN_C, cv::THRESH_BINARY, 5, 1.5);
+			if (row == 1 && col == 0)
+				cv::imshow("beforeThresholding", puzzleSquareDigitImages[1][0]);
 			
+			cv::adaptiveThreshold(puzzleSquareDigitImages[row][col], puzzleSquareDigitImages[row][col],
+				255, cv::ADAPTIVE_THRESH_GAUSSIAN_C, cv::THRESH_BINARY, 9, 1.2);
+			
+			if (row == 1 && col == 0)
+				cv::imshow("afterThresholding", puzzleSquareDigitImages[1][0]);
 
-			cv::Mat kernel = (cv::Mat_<uchar>(3, 3) << 0, 1, 0, 1, 1, 1, 0, 1, 0);
+			cv::Mat kernel = (cv::Mat_<uchar>(5, 5) << 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0);
+			//cv::Mat kernel = (cv::Mat_<uchar>(3, 3) << 0, 1, 0, 1, 1, 1, 0, 1, 0);
 
 			cv::bitwise_not(puzzleSquareDigitImages[row][col], puzzleSquareDigitImages[row][col]);
 			cv::dilate(puzzleSquareDigitImages[row][col], puzzleSquareDigitImages[row][col], kernel);
 			cv::dilate(puzzleSquareDigitImages[row][col], puzzleSquareDigitImages[row][col], kernel);
-			cv::dilate(puzzleSquareDigitImages[row][col], puzzleSquareDigitImages[row][col], kernel);
-			cv::dilate(puzzleSquareDigitImages[row][col], puzzleSquareDigitImages[row][col], kernel); //TODO porawic to jakos
+			//cv::dilate(puzzleSquareDigitImages[row][col], puzzleSquareDigitImages[row][col], kernel);
+			//cv::dilate(puzzleSquareDigitImages[row][col], puzzleSquareDigitImages[row][col], kernel); //TODO porawic to jakos
+
+			if (row == 1 && col == 0)
+				cv::imshow("beforeRemovingBorder", puzzleSquareDigitImages[1][0]);
+
 			removeBorderFromImage(puzzleSquareDigitImages[row][col]);
+
+			//if (row == 1 && col == 0)
+			//	cv::imshow("afterRemovingBorder", puzzleSquareDigitImages[1][0]);
+
+
+			erode(puzzleSquareDigitImages[row][col], puzzleSquareDigitImages[row][col], kernel);
+			//erode(puzzleSquareDigitImages[row][col], puzzleSquareDigitImages[row][col], kernel);
+
+			if (row == 1 && col == 0)
+				cv::imshow("afterRemovingBorder", puzzleSquareDigitImages[1][0]);
+
+			//cv::imshow("imgPerspective", imgPerspective);
+			//cv::imshow("imgDigitImage", puzzleSquareDigitsImages[0][3]);
+			//cv::imshow("imgThresholdPerspective", imgThresholdPerspective);
+			//cv::imshow("imgThresholdDigitsImages", imgThresholdDigitsImages[0][3]);
 
 			std::vector<std::vector<Point>> contours;
 			
@@ -288,74 +338,12 @@ void SudokuImageReader::prepareDigitImagesForDetection(cv::Mat** puzzleSquareDig
 				Mat translationMatrix = (Mat_<double>(2, 3) << 1, 0, deltaX, 0, 1, deltaY);
 				warpAffine(puzzleSquareDigitImages[row][col], puzzleSquareDigitImages[row][col], translationMatrix, puzzleSquareDigitImages[row][col].size());
 			}
-
-
-			//convertColourImagesToGrayScale(puzzleSquareDigitImages[row][col]);
-			//blurColourImagesToGrayScale(puzzleSquareDigitImages);
-			//thresholdDigitImages(puzzleSquareDigitImages);
-			//dilateDigitImages(puzzleSquareDigitImages);
-			//erodeDigitImages(puzzleSquareDigitImages);
-			//removeBorders(puzzleSquareDigitImages);
 		}
 
 }
 
-/*
-void SudokuImageReader::convertColourImagesToGrayScale(cv::Mat** puzzleSquareDigitImages)
-{
 
-			cv::cvtColor(puzzleSquareDigitImages[row][col], puzzleSquareDigitImages[row][col], CV_BGR2GRAY);       // convert to grayscale
-}
 
-void SudokuImageReader::blurColourImagesToGrayScale(cv::Mat** puzzleSquareDigitImages)
-{
-	for (int row = 0; row < 9; row++)
-		for (int col = 0; col < 9; col++)
-			cv::GaussianBlur(puzzleSquareDigitImages[row][col],         // input image
-				puzzleSquareDigitImages[row][col],						// output image
-				cv::Size(11, 11),										// smoothing window width and height in pixels
-				0);														// sigma value, determines how much the image will be blurred
-}
-
-void SudokuImageReader::thresholdDigitImages(cv::Mat** puzzleSquareDigitImages)
-{
-	cv::Mat temp;
-	for (int row = 0; row < 9; row++)
-		for (int col = 0; col < 9; col++)
-		{
-			cv::adaptiveThreshold(puzzleSquareDigitImages[row][col], temp,
-				255, cv::ADAPTIVE_THRESH_MEAN_C, cv::THRESH_BINARY, 5, 1.5);
-			puzzleSquareDigitImages[row][col] = temp;
-		}
-
-}
-
-void SudokuImageReader::dilateDigitImages(cv::Mat** puzzleSquareDigitImages)
-{
-	cv::Mat kernel = (cv::Mat_<uchar>(3, 3) << 0, 1, 0, 1, 1, 1, 0, 1, 0);
-	for (int row = 0; row < 9; row++)
-		for (int col = 0; col < 9; col++)
-		{
-			cv::bitwise_not(puzzleSquareDigitImages[row][col], puzzleSquareDigitImages[row][col]);
-			cv::dilate(puzzleSquareDigitImages[row][col], puzzleSquareDigitImages[row][col], kernel);
-		}
-}
-
-void SudokuImageReader::erodeDigitImages(cv::Mat** puzzleSquareDigitImages)
-{
-	cv::Mat kernel = (cv::Mat_<uchar>(3, 3) << 0, 1, 0, 1, 1, 1, 0, 1, 0);
-	for (int row = 0; row < 9; row++)
-		for (int col = 0; col < 9; col++)
-			erode(puzzleSquareDigitImages[row][col], puzzleSquareDigitImages[row][col], kernel);
-}
-
-void SudokuImageReader::removeBorders(cv::Mat** puzzleSquareDigitImages)
-{
-	for (int row = 0; row < 9; row++)
-		for (int col = 0; col < 9; col++)
-			removeBorderFromImage(puzzleSquareDigitImages[row][col]);
-}
-*/
 void SudokuImageReader::removeBorderFromImage(cv::Mat puzzleSquareDigitImage)
 {
 	int xDimSize = puzzleSquareDigitImage.size().width;
