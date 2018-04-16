@@ -128,12 +128,13 @@ void SudokuImageReader::prepareDigitImagesForDetection(cv::Mat** puzzleSquareDig
 
 			cv::GaussianBlur(puzzleSquareDigitImages[row][col],         // input image
 				puzzleSquareDigitImages[row][col],						// output image
-				cv::Size(11, 11),										// smoothing window width and height in pixels
+				cv::Size(5, 5),										// smoothing window width and height in pixels
 				0);														// sigma value, determines how much the image will be blurred
 			
 
 			cv::adaptiveThreshold(puzzleSquareDigitImages[row][col], puzzleSquareDigitImages[row][col],
-				255, cv::ADAPTIVE_THRESH_GAUSSIAN_C, cv::THRESH_BINARY_INV, 9, 1.2);
+				255, cv::ADAPTIVE_THRESH_GAUSSIAN_C, cv::THRESH_BINARY_INV, 19, 2.5);
+			
 		}
 	}
 
@@ -148,7 +149,9 @@ void SudokuImageReader::prepareDigitImagesForDetection(cv::Mat** puzzleSquareDig
 		for (int col = 0; col < 9; col++)
 		{
 			
-			cv::dilate(puzzleSquareDigitImages[row][col], puzzleSquareDigitImages[row][col], kernel); 			
+			cv::dilate(puzzleSquareDigitImages[row][col], puzzleSquareDigitImages[row][col], kernel); 
+			
+			
 
 			removeBorderFromImage(puzzleSquareDigitImages[row][col]);
 			findBiggestBlob(puzzleSquareDigitImages[row][col]);
@@ -166,7 +169,7 @@ void SudokuImageReader::prepareDigitImagesForDetection(cv::Mat** puzzleSquareDig
 
 			
 
-			erode(puzzleSquareDigitImages[row][col], puzzleSquareDigitImages[row][col], kernel);
+			
 			//erode(puzzleSquareDigitImages[row][col], puzzleSquareDigitImages[row][col], kernel);
 
 			
@@ -194,6 +197,9 @@ void SudokuImageReader::prepareDigitImagesForDetection(cv::Mat** puzzleSquareDig
 
 				Mat translationMatrix = (Mat_<double>(2, 3) << 1, 0, deltaX, 0, 1, deltaY);
 				warpAffine(puzzleSquareDigitImages[row][col], puzzleSquareDigitImages[row][col], translationMatrix, puzzleSquareDigitImages[row][col].size());
+
+				
+				erode(puzzleSquareDigitImages[row][col], puzzleSquareDigitImages[row][col], kernel);
 			}
 		}
 	}
@@ -330,6 +336,12 @@ cv::Mat SudokuImageReader::findBiggestBlob(cv::Mat input)
 		}
 
 	}
+	if (max < 200)
+	{
+		imgBiggestBlob = Mat::zeros(imgBiggestBlob.size(), imgBiggestBlob.type());
+		return imgBiggestBlob;	
+	}
+
 
 	floodFill(imgBiggestBlob, maxPt, CV_RGB(255, 255, 255));
 
@@ -365,7 +377,7 @@ Mat** SudokuImageReader::cutPuzzleImageIntoDigitsImages(cv::Mat imageToBeCut)
 	{
 		for (int col = 0;col < 9; col++)
 		{
-			upperIndentation = 20; leftIndentation = 20; rightIndentation = 20; bottomIndentation = 20;
+			upperIndentation = 30; leftIndentation = 30; rightIndentation = 30; bottomIndentation = 30;
 			if (row == 0) upperIndentation = 0;
 			if (col == 0) leftIndentation = 0;
 			if (col == 8) rightIndentation = 0;

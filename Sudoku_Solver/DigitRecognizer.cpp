@@ -74,7 +74,7 @@ Mat DigitRecognizer::preprocessImage(Mat img)
 
 	cvtColor(img, matGrayscale, CV_BGR2GRAY);
 	GaussianBlur(matGrayscale, matBlurred, cv::Size(5, 5), 0);    
-	adaptiveThreshold(matBlurred, matThresh, 255, cv::ADAPTIVE_THRESH_MEAN_C, cv::THRESH_BINARY, 11, 2);
+	adaptiveThreshold(matBlurred, matThresh, 255, cv::ADAPTIVE_THRESH_GAUSSIAN_C, cv::THRESH_BINARY, 11, 2);
 
 	Mat matImageFloat;
 	matThresh.convertTo(matImageFloat, CV_32FC1);
