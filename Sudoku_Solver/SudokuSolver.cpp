@@ -15,8 +15,10 @@ SudokuSolver::~SudokuSolver()
 void SudokuSolver::solveProblem(String problemPath)
 {
 	Mat** sudokuParts = sudokuImageReader.readSudokuFromImage(problemPath);
+	if (sudokuParts == NULL) return;
 	digitRecognizer.classifyAll(sudokuParts);
 	Mat classificationResultImage = SudokuImageReader::joinImagesIntoOne(sudokuParts);
-	cv::imshow("imgThresholdDigitsImages", classificationResultImage);
+	cv::namedWindow("classificationResultImage", CV_WINDOW_NORMAL);
+	cv::imshow("classificationResultImage", classificationResultImage);
 	return;
 }
