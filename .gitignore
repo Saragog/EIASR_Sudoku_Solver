@@ -325,3 +325,4 @@ __pycache__/
 *.out
 *.app
 
+/train_data

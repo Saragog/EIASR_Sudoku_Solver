@@ -16,9 +16,9 @@ void SudokuSolver::solveProblem(String problemPath)
 {
 	Mat** sudokuParts = sudokuImageReader.readSudokuFromImage(problemPath);
 	if (sudokuParts == NULL) return;
-	digitRecognizer.classifyAll(sudokuParts);
-	Mat classificationResultImage = SudokuImageReader::joinImagesIntoOne(sudokuParts);
+	Mat recognitionResult = digitRecognizer.classifyAll(sudokuParts);
+	//Mat classificationResultImage = SudokuImageReader::joinImagesIntoOne(sudokuParts);
 	cv::namedWindow("classificationResultImage", CV_WINDOW_NORMAL);
-	cv::imshow("classificationResultImage", classificationResultImage);
+	cv::imshow("classificationResultImage", recognitionResult);
 	return;
 }
