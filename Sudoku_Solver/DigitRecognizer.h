@@ -21,14 +21,14 @@ public:
 	bool train(cv::String trainPath);
 
 	int classify(cv::Mat img); //przyjmuje kolorowe obrazy
-	cv::Mat* classifyAll(cv::Mat** images); // testing function for classification of 2d arrays of images
+	cv::Mat classifyAll(cv::Mat** images); // testing function for classification of 2d arrays of images
 	cv::Mat preprocessClassImage(cv::Mat img);
 
 private:
 	void addTrainingImage(cv::Mat* trainingImages, cv::Mat img);
 	void prepareTraining(cv::Mat* trainingImages, cv::Mat* classificationInts, cv::String path);
 	cv::Mat preprocessImage(cv::Mat img);
-	cv::Mat* DigitRecognizer::createClassificationResultImage(int classificationResults[][9]);
+	cv::Mat DigitRecognizer::createClassificationResultImage(int classificationResults[][9]);
 
 private:
 	cv::Ptr<cv::ml::KNearest> classifier;

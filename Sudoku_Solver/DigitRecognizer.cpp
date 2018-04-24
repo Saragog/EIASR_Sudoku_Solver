@@ -39,7 +39,7 @@ int DigitRecognizer::classify(Mat img)
 	return int(result);
 }
 
-cv::Mat* DigitRecognizer::classifyAll(cv::Mat** images) // testing function for classification of 2d arrays of images
+cv::Mat DigitRecognizer::classifyAll(cv::Mat** images) // testing function for classification of 2d arrays of images
 {
 	int classificationResults[9][9];
 	for (int row = 0; row < 9; row++)
@@ -48,9 +48,9 @@ cv::Mat* DigitRecognizer::classifyAll(cv::Mat** images) // testing function for 
 	return createClassificationResultImage(classificationResults);
 }
 
-cv::Mat* DigitRecognizer::createClassificationResultImage(int classificationResults[][9])
+cv::Mat DigitRecognizer::createClassificationResultImage(int classificationResults[][9])
 {
-	cv::Mat* classificationResult = new cv::Mat(500, 500, CV_8UC1);
+	cv::Mat classificationResult = cv::Mat(500, 500, CV_8UC1);
 	for (int row = 0; row < 9; row++)
 		for (int col = 0; col < 9; col++)
 		{
