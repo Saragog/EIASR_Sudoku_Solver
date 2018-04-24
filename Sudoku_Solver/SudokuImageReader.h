@@ -15,7 +15,7 @@ public:
 
 private:
 
-	int** initializeSudokuProblem();
+	//int** initializeSudokuProblem();
 	//void drawLine(cv::Vec2f line, cv::Mat &img, cv::Scalar rgb = CV_RGB(0, 0, 255));
 	cv::Mat findAndRemovePerspective(cv::Mat input);
 	cv::Mat findBiggestBlob(cv::Mat input);

@@ -29,6 +29,7 @@ private:
 	void prepareTraining(cv::Mat* trainingImages, cv::Mat* classificationInts, cv::String path);
 	cv::Mat preprocessImage(cv::Mat img);
 	cv::Mat DigitRecognizer::createClassificationResultImage(int classificationResults[][9]);
+	cv::Mat** initializeResultImageParts();
 
 private:
 	cv::Ptr<cv::ml::KNearest> classifier;

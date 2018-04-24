@@ -84,39 +84,10 @@ Mat SudokuImageReader::joinImagesIntoOne(cv::Mat** images) // testing method for
 	}
 	// TODO show sudoku solution
 	// TODO clean the sudoku problem 2d array somewhere (delete)
+
 	return wholeImage;
 
 }
-
-int** SudokuImageReader::initializeSudokuProblem()
-{
-	int** sudokuProblem = new int*[9];
-	for (int row = 0; row < 9; ++row)
-	{
-		sudokuProblem[row] = new int[9];
-		for (int col = 0; col < 9; ++col)
-			sudokuProblem[row][col] = 0;
-	}
-	return sudokuProblem;
-}
-
-
-//void SudokuImageReader::drawLine(cv::Vec2f line, cv::Mat &img, cv::Scalar rgb)
-//{
-//	if (line[1] != 0)
-//	{
-//		float m = -1 / tan(line[1]);
-//
-//		float c = line[0] / sin(line[1]);
-//
-//		cv::line(img, Point(0, c), Point(img.size().width, m*img.size().width + c), rgb);
-//	}
-//	else
-//	{
-//		cv::line(img, Point(line[0], 0), Point(line[0], img.size().height), rgb);
-//	}
-//
-//}
 
 void SudokuImageReader::prepareDigitImagesForDetection(cv::Mat** puzzleSquareDigitImages)
 {
