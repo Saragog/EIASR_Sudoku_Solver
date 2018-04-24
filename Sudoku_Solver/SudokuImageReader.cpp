@@ -197,7 +197,7 @@ void SudokuImageReader::prepareDigitImagesForDetection(cv::Mat** puzzleSquareDig
 
 				Mat translationMatrix = (Mat_<double>(2, 3) << 1, 0, deltaX, 0, 1, deltaY);
 				warpAffine(puzzleSquareDigitImages[row][col], puzzleSquareDigitImages[row][col], translationMatrix, puzzleSquareDigitImages[row][col].size());
-
+				//TODO sprawdzic skalowanie do wielkosci
 				
 				erode(puzzleSquareDigitImages[row][col], puzzleSquareDigitImages[row][col], kernel);
 			}
