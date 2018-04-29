@@ -42,6 +42,9 @@
     <ClInclude Include="SudokuSolver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ImageWindowCreator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Sudoku_Solver.cpp">
@@ -63,6 +66,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="SudokuSolver.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageWindowCreator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -15,3 +15,10 @@ void SudokuProblemSolver::solveSudokuProblem(int** sudokuProblem)
 {
 
 }
+
+bool SudokuProblemSolver::checkIfSudokuProblemIsAppropriate(int** sudokuProblem)
+{
+	// TODO lots of work here
+
+	return true;
+}
