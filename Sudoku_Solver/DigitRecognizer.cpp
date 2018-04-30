@@ -33,9 +33,9 @@ bool DigitRecognizer::train(cv::String path)
 
 int DigitRecognizer::classify(Mat img)
 {
-	Mat matImageFlattened = preprocessClassImage(img);
+	Mat matImageFlattened = preprocessSudokuDigitImage(img);
 	Mat matResult(0, 0, CV_32F);
-	classifier->findNearest(matImageFlattened, 1, matResult);
+	classifier->findNearest(matImageFlattened, 2, matResult);
 	float result = matResult.at<float>(0, 0);
 	return int(result);
 }
@@ -55,16 +55,50 @@ int** DigitRecognizer::classifyAll(cv::Mat** images) // testing function for cla
 	return classificationResults;
 }
 
-cv::Mat DigitRecognizer::preprocessClassImage(cv::Mat img)
+cv::Mat DigitRecognizer::createClassificationResultImage(int** classificationResults)
+{
+	cv::Mat classificationResult;
+	cv::Mat** resultImageParts = initializeResultImageParts();
+	for (int row = 0; row < 9; row++)
+		for (int col = 0; col < 9; col++)
+			putText(resultImageParts[row][col], std::to_string(classificationResults[row][col]), Point(10, 40), cv::FONT_HERSHEY_COMPLEX, 1, CV_RGB(0, 0, 255));
+	classificationResult = SudokuImageReader::joinImagesIntoOne(resultImageParts);
+	
+	delete resultImageParts;
+
+	return classificationResult;
+}
+
+cv::Mat** DigitRecognizer::initializeResultImageParts()
+{
+	cv::Mat** imageParts = new cv::Mat*[9];
+	for (int r = 0; r < 9; r++)
+	{
+		imageParts[r] = new Mat[9];
+		for (int c = 0; c < 9; c++)
+		{
+			imageParts[r][c] = Mat(100, 100, CV_8UC1, Scalar(0, 0, 0));
+		}
+	}
+	return imageParts;
+}
+
+cv::Mat DigitRecognizer::preprocessSudokuDigitImage(cv::Mat img)
 {
 	Mat imgResized;
 	
 	resize(img, imgResized, cv::Size(RESIZED_IMAGE_WIDTH, RESIZED_IMAGE_HEIGHT));
-	cv::bitwise_not(imgResized, imgResized);
-	Mat matImageFloat;
-	imgResized.convertTo(matImageFloat, CV_32FC1);
-	Mat matImageFlattenedFloat = matImageFloat.reshape(1, 1);
+	
 
+	Moments m = moments(imgResized, true);
+
+	//sprobowac z normalizacja rozmiaru i cala bitmapa do knn
+	Mat matHuMoments;
+	HuMoments(m, matHuMoments);
+	
+	Mat matImageFloat;
+	matHuMoments.convertTo(matImageFloat, CV_32FC1);
+	Mat matImageFlattenedFloat = matImageFloat.reshape(1, 1);
 	return matImageFlattenedFloat;
 }
 
@@ -76,13 +110,21 @@ Mat DigitRecognizer::preprocessImage(Mat img)
 
 	cvtColor(img, matGrayscale, CV_BGR2GRAY);
 	GaussianBlur(matGrayscale, matBlurred, cv::Size(5, 5), 0);    
-	adaptiveThreshold(matBlurred, matThresh, 255, cv::ADAPTIVE_THRESH_GAUSSIAN_C, cv::THRESH_BINARY, 11, 2);
+	adaptiveThreshold(matBlurred, matThresh, 255, cv::ADAPTIVE_THRESH_GAUSSIAN_C, cv::THRESH_BINARY_INV, 11, 2);
 
+	Moments m = moments(matThresh, true);
+	Mat matHuMoments;
+	HuMoments(m, matHuMoments);
+	double huhu[9];
+	HuMoments(m, huhu);
+	
+	
 	Mat matImageFloat;
-	matThresh.convertTo(matImageFloat, CV_32FC1);
+	matHuMoments.convertTo(matImageFloat, CV_32FC1);
 	Mat matImageFlattenedFloat = matImageFloat.reshape(1, 1);
-
 	return matImageFlattenedFloat;
+
+	//return matHuMoments;
 }
 
 void DigitRecognizer::addTrainingImage(cv::Mat * trainingImages, cv::Mat img)
@@ -106,7 +148,7 @@ void DigitRecognizer::prepareTraining(cv::Mat * trainingImages, cv::Mat * classi
 		std::vector<String> filenames;
 
 		glob(tempPath, filenames); 
-
+		
 		for (int a = 0; a < filenames.size(); ++a)
 		{
 			Mat src = imread(filenames[a]);
