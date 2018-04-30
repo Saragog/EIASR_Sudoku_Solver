@@ -150,13 +150,14 @@ void SudokuImageReader::prepareDigitImagesForDetection(cv::Mat** puzzleSquareDig
 			//cv::imshow("imgThresholdPerspective", imgThresholdPerspective);
 			//cv::imshow("imgThresholdDigitsImages", imgThresholdDigitsImages[0][3]);
 
-			std::vector<std::vector<Point>> contours;
+			//std::vector<std::vector<Point>> contours;
 
-
-			cv::findContours(puzzleSquareDigitImages[row][col], contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE, Point(0, 0));
-			if (!contours.empty())
+			//cv::findContours(puzzleSquareDigitImages[row][col], contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE, Point(0, 0));
+			cv::Moments m = moments(puzzleSquareDigitImages[row][col], true);
+			//posprzatac
+			if (true)
 			{
-				cv::Moments m = moments(contours[0], true);
+				//cv::Moments m = moments(contours[0], true);
 
 				int middleX = (int)(m.m10 / m.m00), middleY = (int)(m.m01 / m.m00);
 

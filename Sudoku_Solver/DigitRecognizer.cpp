@@ -33,9 +33,9 @@ bool DigitRecognizer::train(cv::String path)
 
 int DigitRecognizer::classify(Mat img)
 {
-	Mat matImageFlattened = preprocessClassImage(img);
+	Mat matImageFlattened = preprocessSudokuDigitImage(img);
 	Mat matResult(0, 0, CV_32F);
-	classifier->findNearest(matImageFlattened, 1, matResult);
+	classifier->findNearest(matImageFlattened, 2, matResult);
 	float result = matResult.at<float>(0, 0);
 	return int(result);
 }
@@ -83,16 +83,22 @@ cv::Mat** DigitRecognizer::initializeResultImageParts()
 	return imageParts;
 }
 
-cv::Mat DigitRecognizer::preprocessClassImage(cv::Mat img)
+cv::Mat DigitRecognizer::preprocessSudokuDigitImage(cv::Mat img)
 {
 	Mat imgResized;
 	
 	resize(img, imgResized, cv::Size(RESIZED_IMAGE_WIDTH, RESIZED_IMAGE_HEIGHT));
-	cv::bitwise_not(imgResized, imgResized);
-	Mat matImageFloat;
-	imgResized.convertTo(matImageFloat, CV_32FC1);
-	Mat matImageFlattenedFloat = matImageFloat.reshape(1, 1);
+	
 
+	Moments m = moments(imgResized, true);
+
+	//sprobowac z normalizacja rozmiaru i cala bitmapa do knn
+	Mat matHuMoments;
+	HuMoments(m, matHuMoments);
+	
+	Mat matImageFloat;
+	matHuMoments.convertTo(matImageFloat, CV_32FC1);
+	Mat matImageFlattenedFloat = matImageFloat.reshape(1, 1);
 	return matImageFlattenedFloat;
 }
 
@@ -104,13 +110,21 @@ Mat DigitRecognizer::preprocessImage(Mat img)
 
 	cvtColor(img, matGrayscale, CV_BGR2GRAY);
 	GaussianBlur(matGrayscale, matBlurred, cv::Size(5, 5), 0);    
-	adaptiveThreshold(matBlurred, matThresh, 255, cv::ADAPTIVE_THRESH_GAUSSIAN_C, cv::THRESH_BINARY, 11, 2);
+	adaptiveThreshold(matBlurred, matThresh, 255, cv::ADAPTIVE_THRESH_GAUSSIAN_C, cv::THRESH_BINARY_INV, 11, 2);
 
+	Moments m = moments(matThresh, true);
+	Mat matHuMoments;
+	HuMoments(m, matHuMoments);
+	double huhu[9];
+	HuMoments(m, huhu);
+	
+	
 	Mat matImageFloat;
-	matThresh.convertTo(matImageFloat, CV_32FC1);
+	matHuMoments.convertTo(matImageFloat, CV_32FC1);
 	Mat matImageFlattenedFloat = matImageFloat.reshape(1, 1);
-
 	return matImageFlattenedFloat;
+
+	//return matHuMoments;
 }
 
 void DigitRecognizer::addTrainingImage(cv::Mat * trainingImages, cv::Mat img)
@@ -134,7 +148,7 @@ void DigitRecognizer::prepareTraining(cv::Mat * trainingImages, cv::Mat * classi
 		std::vector<String> filenames;
 
 		glob(tempPath, filenames); 
-
+		
 		for (int a = 0; a < filenames.size(); ++a)
 		{
 			Mat src = imread(filenames[a]);
