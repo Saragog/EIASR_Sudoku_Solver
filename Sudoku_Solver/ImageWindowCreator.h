@@ -8,7 +8,10 @@ public:
 	ImageWindowCreator();
 	~ImageWindowCreator();
 
-	static void showImage(int**);
-	static void showImage(cv::Mat**);
+	static void showImage(cv::String, cv::Mat);
+	static void showImage(cv::String, int**);
+	static void showImage(cv::String, cv::Mat**);
+	static cv::Mat joinImagesIntoOne(cv::Mat** images);
+	static cv::Mat** initializeFullImage();
 };
 

@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "SudokuImageReader.h"
+#include "ImageWindowCreator.h"
 #include<conio.h>
 
 using namespace cv;
@@ -41,8 +42,7 @@ Mat** SudokuImageReader::readSudokuFromImage(String path)
 		return NULL;                                            // and exit program
 	}
 
-	cv::namedWindow("imgOriginal", CV_WINDOW_NORMAL);
-	cv::imshow("imgOriginal", imgOriginal);
+	ImageWindowCreator::showImage("Original Image", imgOriginal);
 
 	imgPerspective = findAndRemovePerspective(imgOriginal);
 
@@ -54,8 +54,7 @@ Mat** SudokuImageReader::readSudokuFromImage(String path)
 	
 	// _____
 	// declare windows
-	cv::namedWindow("imgOriginal", CV_WINDOW_NORMAL);     
-	cv::imshow("imgOriginal", imgOriginal);													  
+	ImageWindowCreator::showImage("Perspective removed", imgPerspective);												  
 														  
 	
 	// ________
@@ -110,9 +109,9 @@ void SudokuImageReader::prepareDigitImagesForDetection(cv::Mat** puzzleSquareDig
 	}
 
 	Mat combinedParts = joinImagesIntoOne(puzzleSquareDigitImages);
-	cv::namedWindow("combinedParts Threshold", CV_WINDOW_NORMAL);
-	cv::imshow("combinedParts Threshold", combinedParts);
-	
+
+	ImageWindowCreator::showImage("combinedParts Threshold", combinedParts);
+
 	//cv::Mat kernel = (cv::Mat_<uchar>(5, 5) << 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0);
 	cv::Mat kernel = (cv::Mat_<uchar>(3, 3) << 0, 1, 0, 1, 1, 1, 0, 1, 0);
 	for (int row = 0; row < 9; row++)
@@ -130,28 +129,13 @@ void SudokuImageReader::prepareDigitImagesForDetection(cv::Mat** puzzleSquareDig
 	}
 
 	combinedParts = joinImagesIntoOne(puzzleSquareDigitImages);
-	cv::namedWindow("combinedParts removeBorder", CV_WINDOW_NORMAL);
-	cv::imshow("combinedParts removeBorder", combinedParts);
+	ImageWindowCreator::showImage("combinedParts removedBorder", combinedParts);
 
 	for (int row = 0; row < 9; row++)
 	{
 		for (int col = 0; col < 9; col++)
 		{
-
-			
-
-			
-			//erode(puzzleSquareDigitImages[row][col], puzzleSquareDigitImages[row][col], kernel);
-
-			
-
-			//cv::imshow("imgPerspective", imgPerspective);
-			//cv::imshow("imgDigitImage", puzzleSquareDigitsImages[0][3]);
-			//cv::imshow("imgThresholdPerspective", imgThresholdPerspective);
-			//cv::imshow("imgThresholdDigitsImages", imgThresholdDigitsImages[0][3]);
-
 			std::vector<std::vector<Point>> contours;
-
 
 			cv::findContours(puzzleSquareDigitImages[row][col], contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE, Point(0, 0));
 			if (!contours.empty())
@@ -168,7 +152,6 @@ void SudokuImageReader::prepareDigitImagesForDetection(cv::Mat** puzzleSquareDig
 
 				Mat translationMatrix = (Mat_<double>(2, 3) << 1, 0, deltaX, 0, 1, deltaY);
 				warpAffine(puzzleSquareDigitImages[row][col], puzzleSquareDigitImages[row][col], translationMatrix, puzzleSquareDigitImages[row][col].size());
-				//TODO sprawdzic skalowanie do wielkosci
 				
 				erode(puzzleSquareDigitImages[row][col], puzzleSquareDigitImages[row][col], kernel);
 			}
@@ -198,7 +181,7 @@ void SudokuImageReader::removeBorderFromImage(cv::Mat puzzleSquareDigitImage)
 cv::Mat SudokuImageReader::findAndRemovePerspective(cv::Mat input)
 {
 	cv::Mat imgBlurred;         // intermediate blured image
-	cv::Mat imgTreshold;		// tresholded image
+	cv::Mat imgThreshold;		// tresholded image
 	cv::Mat imgBiggestBlob;
 
 	resize(input, imgBlurred, cv::Size((input.size().width*1200)/input.size().height, 1200)); // przeskalowanie z zachowaniem proporcji
@@ -210,39 +193,21 @@ cv::Mat SudokuImageReader::findAndRemovePerspective(cv::Mat input)
 		cv::Size(11, 11),					// smoothing window width and height in pixels
 		0);                               // sigma value, determines how much the image will be blurred
 
-	cv::namedWindow("imgBlurred", CV_WINDOW_NORMAL);
-	cv::imshow("imgBlurred", imgBlurred);
+	ImageWindowCreator::showImage("imgBlurred", imgBlurred);
 
-	cv::adaptiveThreshold(imgBlurred, imgTreshold, 255, cv::ADAPTIVE_THRESH_MEAN_C, cv::THRESH_BINARY_INV, 5, 1.5);
+	cv::adaptiveThreshold(imgBlurred, imgThreshold, 255, cv::ADAPTIVE_THRESH_MEAN_C, cv::THRESH_BINARY_INV, 5, 1.5);
 
-	cv::namedWindow("imgTreshold", CV_WINDOW_NORMAL);
-	cv::imshow("imgTreshold", imgTreshold);
-
-	//cv::bitwise_not(imgTreshold, imgBitwiseNot);
+	ImageWindowCreator::showImage("Img threshold", imgThreshold);
 
 	cv::Mat kernel = (cv::Mat_<uchar>(3, 3) << 0, 1, 0, 1, 1, 1, 0, 1, 0);
 
-	cv::dilate(imgTreshold, imgTreshold, kernel);
+	cv::dilate(imgThreshold, imgThreshold, kernel);
 
-	cv::namedWindow("imgTresholdDilate", CV_WINDOW_NORMAL);
-	cv::imshow("imgTresholdDilate", imgTreshold);
+	ImageWindowCreator::showImage("Img Threshold Dilate", imgThreshold);
 	
-	imgBiggestBlob = findBiggestBlob(imgTreshold);
+	imgBiggestBlob = findBiggestBlob(imgThreshold);
 
-	cv::namedWindow("imgBiggestBlob", CV_WINDOW_NORMAL);
-	cv::imshow("imgBiggestBlob", imgBiggestBlob);
-
-	
-
-	
-	//cv::dilate(imgBiggestBlob, imgBiggestBlob, kernel);
-	//cv::dilate(imgBiggestBlob, imgBiggestBlob, kernel);
-	//cv::dilate(imgBiggestBlob, imgBiggestBlob, kernel);
-	
-
-	//erode(imgBiggestBlob, imgBiggestBlob, kernel);
-
-	
+	ImageWindowCreator::showImage("imgBiggestBlob", imgBiggestBlob);
 
 	std::vector<std::vector<Point>> contours;
 
@@ -264,8 +229,7 @@ cv::Mat SudokuImageReader::findAndRemovePerspective(cv::Mat input)
 		cornersf[circleIndex] = Point2f(corners[circleIndex].x *resizeRatio, corners[circleIndex].y*resizeRatio);
 	}
 
-	cv::namedWindow("imgDetectedCorners", CV_WINDOW_NORMAL);
-	cv::imshow("imgDetectedCorners", imgDetectedCorners);
+	ImageWindowCreator::showImage("Img Detected Corners", imgDetectedCorners);
 
 	Point2f dst[] = { Point2f(0,0),Point2f(FLAT_IMAGE_WIDTH,0), Point2f(0,FLAT_IMAGE_HEIGHT),Point2f(FLAT_IMAGE_WIDTH,FLAT_IMAGE_HEIGHT) }; //1080/1080
 
@@ -273,8 +237,7 @@ cv::Mat SudokuImageReader::findAndRemovePerspective(cv::Mat input)
 	Mat M = getPerspectiveTransform(cornersf, dst);
 	warpPerspective(input, imgPerspective, M, Size(FLAT_IMAGE_WIDTH, FLAT_IMAGE_HEIGHT));
 
-	cv::namedWindow("imgPerspective", CV_WINDOW_NORMAL);
-	cv::imshow("imgPerspective", imgPerspective);
+	ImageWindowCreator::showImage("Img Perspective", imgPerspective);
 
 	return imgPerspective;
 }

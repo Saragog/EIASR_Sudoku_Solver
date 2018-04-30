@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "SudokuSolver.h"
 
+#include "ImageWindowCreator.h"
+
 using namespace cv;
 SudokuSolver::SudokuSolver()
 {
@@ -21,23 +23,19 @@ void SudokuSolver::solveProblem(String problemPath)
 	Mat** sudokuParts = sudokuImageReader.readSudokuFromImage(problemPath);
 	if (sudokuParts == NULL) return;
 	int** sudokuValues = digitRecognizer.classifyAll(sudokuParts);
-	Mat recognitionResult = digitRecognizer.createClassificationResultImage(sudokuValues);
 
 	// Detected numbers in original method
-	cv::namedWindow("classificationResultImage1", CV_WINDOW_NORMAL);
-	cv::imshow("classificationResultImage1", recognitionResult);
+	ImageWindowCreator::showImage("Classification Result Image1", sudokuValues);
 
 	// checking if the detected numbers make sense
-	
-	if (sudokuProblemSolver.checkIfSudokuProblemIsAppropriate(sudokuValues)) {
+	if (sudokuProblemSolver.checkIfSudokuProblemIsAppropriate(sudokuValues)) {  // Appropriate values
 		// TODO
 	}
-	else if (sudokuProblemSolver.checkIfSudokuProblemIsAppropriate(sudokuValues))
-
+	else if (sudokuProblemSolver.checkIfSudokuProblemIsAppropriate(sudokuValues)){ // Inappropriate values detected
+		// TODO
+	}
 	return;
 }
-
-
 
 /*
 hierarchy classification todo
