@@ -135,26 +135,20 @@ void SudokuImageReader::prepareDigitImagesForDetection(cv::Mat** puzzleSquareDig
 	{
 		for (int col = 0; col < 9; col++)
 		{
-			std::vector<std::vector<Point>> contours;
+			cv::Moments m = moments(puzzleSquareDigitImages[row][col], true);
+			int middleX = (int)(m.m10 / m.m00), middleY = (int)(m.m01 / m.m00);
 
-			cv::findContours(puzzleSquareDigitImages[row][col], contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE, Point(0, 0));
-			if (!contours.empty())
-			{
-				cv::Moments m = moments(contours[0], true);
+			int halfOfHeight = puzzleSquareDigitImages[row][col].size().height / 2;
+			int halfOfWidth = puzzleSquareDigitImages[row][col].size().width / 2;
 
-				int middleX = (int)(m.m10 / m.m00), middleY = (int)(m.m01 / m.m00);
+			int deltaX = halfOfWidth - middleX;
+			int deltaY = halfOfHeight - middleY;
 
-				int halfOfHeight = puzzleSquareDigitImages[row][col].size().height / 2;
-				int halfOfWidth = puzzleSquareDigitImages[row][col].size().width / 2;
+			Mat translationMatrix = (Mat_<double>(2, 3) << 1, 0, deltaX, 0, 1, deltaY);
+			warpAffine(puzzleSquareDigitImages[row][col], puzzleSquareDigitImages[row][col], translationMatrix, puzzleSquareDigitImages[row][col].size());
+			//TODO sprawdzic skalowanie do wielkosci
 
-				int deltaX = halfOfWidth - middleX;
-				int deltaY = halfOfHeight - middleY;
-
-				Mat translationMatrix = (Mat_<double>(2, 3) << 1, 0, deltaX, 0, 1, deltaY);
-				warpAffine(puzzleSquareDigitImages[row][col], puzzleSquareDigitImages[row][col], translationMatrix, puzzleSquareDigitImages[row][col].size());
-				
-				erode(puzzleSquareDigitImages[row][col], puzzleSquareDigitImages[row][col], kernel);
-			}
+			erode(puzzleSquareDigitImages[row][col], puzzleSquareDigitImages[row][col], kernel);
 		}
 	}
 

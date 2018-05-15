@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "DigitRecognizer.h"
 #include "SudokuImageReader.h"
 
@@ -35,7 +35,7 @@ int DigitRecognizer::classify(Mat img)
 {
 	Mat matImageFlattened = preprocessSudokuDigitImage(img);
 	Mat matResult(0, 0, CV_32F);
-	classifier->findNearest(matImageFlattened, 2, matResult);
+	classifier->findNearest(matImageFlattened, 5, matResult);
 	float result = matResult.at<float>(0, 0);
 	return int(result);
 }
@@ -55,35 +55,7 @@ int** DigitRecognizer::classifyAll(cv::Mat** images) // testing function for cla
 	return classificationResults;
 }
 
-cv::Mat DigitRecognizer::createClassificationResultImage(int** classificationResults)
-{
-	cv::Mat classificationResult;
-	cv::Mat** resultImageParts = initializeResultImageParts();
-	for (int row = 0; row < 9; row++)
-		for (int col = 0; col < 9; col++)
-			putText(resultImageParts[row][col], std::to_string(classificationResults[row][col]), Point(10, 40), cv::FONT_HERSHEY_COMPLEX, 1, CV_RGB(0, 0, 255));
-	classificationResult = SudokuImageReader::joinImagesIntoOne(resultImageParts);
-	
-	delete resultImageParts;
-
-	return classificationResult;
-}
-
-cv::Mat** DigitRecognizer::initializeResultImageParts()
-{
-	cv::Mat** imageParts = new cv::Mat*[9];
-	for (int r = 0; r < 9; r++)
-	{
-		imageParts[r] = new Mat[9];
-		for (int c = 0; c < 9; c++)
-		{
-			imageParts[r][c] = Mat(100, 100, CV_8UC1, Scalar(0, 0, 0));
-		}
-	}
-	return imageParts;
-}
-
-cv::Mat DigitRecognizer::preprocessSudokuDigitImage(cv::Mat img)
+cv::Mat DigitRecognizer::preprocessSudokuDigitImage(cv::Mat img) // TODO zmienić tak, aby dzialalo lepiej :)
 {
 	Mat imgResized;
 	

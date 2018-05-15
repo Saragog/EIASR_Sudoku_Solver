@@ -25,14 +25,13 @@ void SudokuSolver::solveProblem(String problemPath)
 	int** sudokuValues = digitRecognizer.classifyAll(sudokuParts);
 
 	// Detected numbers in original method
-	ImageWindowCreator::showImage("Classification Result Image1", sudokuValues);
 
 	// checking if the detected numbers make sense
 	if (sudokuProblemSolver.checkIfSudokuProblemIsAppropriate(sudokuValues)) {  // Appropriate values
-		// TODO
+		ImageWindowCreator::showImage("Classification Result Image1", sudokuValues, true);
 	}
-	else if (sudokuProblemSolver.checkIfSudokuProblemIsAppropriate(sudokuValues)){ // Inappropriate values detected
-		// TODO
+	else { // Inappropriate values detected
+		ImageWindowCreator::showImage("Classification Result Image1", sudokuValues, false);
 	}
 	return;
 }
