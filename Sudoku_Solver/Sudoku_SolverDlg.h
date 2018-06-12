@@ -10,6 +10,7 @@
 #include "SudokuProblemSolver.h"
 #include "DigitRecognizer.h"
 #include "SudokuSolutionFinder.h"
+#include "resource.h"
 
 
 // CSudoku_SolverDlg dialog
@@ -40,7 +41,7 @@ protected:
 	DECLARE_MESSAGE_MAP()
 
 private:
-	std::string path;							// plik wejsciowy
+	std::string path;									// plik wejsciowy
 	SudokuSolutionFinder solver;						// solver that does all processes needed for solving the problem
 
 

@@ -38,9 +38,12 @@ bool DigitRecognizer::train(cv::String path)
 	// Set SVM Kernel to Radial Basis Function (RBF) 
 	svm->setKernel(ml::SVM::RBF);
 	// Set parameter C
-	svm->setC(100);//(12.5);
+
+	svm->setC(50.5);
+
+
 	// Set parameter Gamma
-	svm->setGamma(0.9);//(0.50625);
+	svm->setGamma(0.50625);
 
 
 	// Train SVM on training data 
@@ -138,7 +141,7 @@ Mat DigitRecognizer::preprocessImage(Mat img)
 
 	cvtColor(img, matGrayscale, CV_BGR2GRAY);
 	GaussianBlur(matGrayscale, matBlurred, cv::Size(5, 5), 0);    
-	adaptiveThreshold(matBlurred, matThresh, 255, cv::ADAPTIVE_THRESH_GAUSSIAN_C, cv::THRESH_BINARY, 11, 2);
+	adaptiveThreshold(matBlurred, matThresh, 255, cv::ADAPTIVE_THRESH_GAUSSIAN_C, cv::THRESH_BINARY_INV, 11, 2);
 	
 	Mat test = preprocessSudokuDigitImage(matThresh);
 	return test;
