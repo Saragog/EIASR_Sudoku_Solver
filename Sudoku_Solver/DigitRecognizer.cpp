@@ -38,16 +38,16 @@ bool DigitRecognizer::train(cv::String path)
 	// Set SVM Kernel to Radial Basis Function (RBF) 
 	svm->setKernel(ml::SVM::RBF);
 	// Set parameter C
-	svm->setC(12.5);
+	svm->setC(210.5);
 	// Set parameter Gamma
 	svm->setGamma(0.50625);
 
 
 	// Train SVM on training data 
 	Ptr<ml::TrainData> td = ml::TrainData::create(matTrainingImagesFlattened, ml::ROW_SAMPLE, matClassificationInts);
-	//svm->train(td);
+	svm->train(td);
 
-	svm->trainAuto(td);
+	//svm->trainAuto(td);
 
 	return true;
 
@@ -67,13 +67,10 @@ int DigitRecognizer::classify(Mat img)
 	//float result = matResult.at<float>(0, 0);
 
 
-<<<<<<< HEAD
-	return (int)(svm->predict(matImageFlattened, matResult));
-	//return 2;
-=======
+
 	return (int)(svm->predict(matImageFlattened.clone()));
 
->>>>>>> d9e329750bf5eff9a4a446af47e3dfb0ee64ba11
+
 
 	//return int(result);
 }
@@ -144,7 +141,7 @@ Mat DigitRecognizer::preprocessImage(Mat img)
 
 	cvtColor(img, matGrayscale, CV_BGR2GRAY);
 	GaussianBlur(matGrayscale, matBlurred, cv::Size(5, 5), 0);    
-	adaptiveThreshold(matBlurred, matThresh, 255, cv::ADAPTIVE_THRESH_GAUSSIAN_C, cv::THRESH_BINARY, 11, 2);
+	adaptiveThreshold(matBlurred, matThresh, 255, cv::ADAPTIVE_THRESH_GAUSSIAN_C, cv::THRESH_BINARY_INV, 11, 2);
 	
 	Mat test = preprocessSudokuDigitImage(matThresh);
 	return test;
