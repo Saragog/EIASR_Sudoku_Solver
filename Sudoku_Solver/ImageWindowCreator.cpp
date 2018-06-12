@@ -52,10 +52,11 @@ cv::Mat ImageWindowCreator::createImageFromValues(int** values, bool isBackgroun
 	else digitsColour = CV_RGB(0, 0, 255);
 	for (int row = 0; row < 9; row++)
 		for (int col = 0; col < 9; col++)
-			putText(resultImageParts[row][col], std::to_string(values[row][col]), Point(30, 70), cv::FONT_HERSHEY_TRIPLEX/*FONT_HERSHEY_COMPLEX*/, 1, digitsColour);//CV_RGB(0, 0, 255));
+			if(values[row][col] != 0)
+				putText(resultImageParts[row][col], std::to_string(values[row][col]), Point(20, 75), cv::FONT_HERSHEY_DUPLEX/*FONT_HERSHEY_COMPLEX*/, 2.5, digitsColour,2);//CV_RGB(0, 0, 255));
 	fullImage = joinImagesIntoOne(resultImageParts);
 	delete resultImageParts;
-	drawCorners(fullImage, isBackgroundWhite);
+	drawLines(fullImage, isBackgroundWhite);
 	return fullImage;
 }
 
@@ -118,15 +119,28 @@ Narazie zrobione na sztywno po 100 pikseli natomiast potem trzeba to gdzies stat
 /*
 	This function draws sudoku edges on the combined image
 */
-void ImageWindowCreator::drawCorners(cv::Mat& image, bool isBackgroundWhite)
+void ImageWindowCreator::drawLines(cv::Mat& image, bool isBackgroundWhite)
 {
 	Scalar lineColour;
 	if (isBackgroundWhite == true) lineColour = CV_RGB(0, 0, 0);
 	else lineColour = CV_RGB(0, 0, 255);
+	int width = 2;
 	for (int row = 0; row < 10; row++)
-		line(image, Point(0, row * 100), Point(1000, row * 100), lineColour, 2/*, int lineType = 8, int shift = 0*/);
+	{
+		if (row == 0 || row == 3 || row == 6 || row == 9)
+			width = 9;
+		else
+			width = 2;
+		line(image, Point(0, row * 100), Point(1000, row * 100), lineColour, width);
+	}
 	for (int column = 0; column < 10; column++)
-		line(image, Point(column * 100, 0), Point(column * 100, 1000), lineColour, 2);
+	{
+		if (column == 0 || column == 3 || column == 6 || column == 9)
+			width = 9;
+		else
+			width = 2;
+		line(image, Point(column * 100, 0), Point(column * 100, 1000), lineColour, width);
+	}
 	return;
 }
 

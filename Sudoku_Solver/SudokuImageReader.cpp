@@ -54,7 +54,7 @@ Mat** SudokuImageReader::readSudokuFromImage(String path)
 	
 	// _____
 	// declare windows
-	//ImageWindowCreator::showImage("Perspective removed", imgPerspective);												  
+	ImageWindowCreator::showImage("Perspective removed", imgPerspective);												  
 														  
 	
 	// ________
@@ -129,7 +129,7 @@ void SudokuImageReader::prepareDigitImagesForDetection(cv::Mat** puzzleSquareDig
 	}
 
 	combinedParts = joinImagesIntoOne(puzzleSquareDigitImages);
-	//ImageWindowCreator::showImage("combinedParts removedBorder", combinedParts);
+	ImageWindowCreator::showImage("combinedParts removedBorder", combinedParts);
 
 	for (int row = 0; row < 9; row++)
 	{

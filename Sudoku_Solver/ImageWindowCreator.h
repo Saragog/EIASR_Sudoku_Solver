@@ -25,7 +25,7 @@ public:
 	static cv::Mat** initializeFullImage(bool);
 	static void showDetectedSudoku(cv::String, int**);
 private:
-	static void drawCorners(cv::Mat&, bool isBackgroundWhite = false);
+	static void drawLines(cv::Mat&, bool isBackgroundWhite = false);
 	static void drawCorrectnessToken(cv::Mat&, bool);
 	static cv::Mat createImageFromValues(int**, bool isBackgroundWhite = false);
 };
