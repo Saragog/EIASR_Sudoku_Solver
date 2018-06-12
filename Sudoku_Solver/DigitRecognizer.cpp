@@ -11,7 +11,7 @@ DigitRecognizer::DigitRecognizer()
 {
 	//mozna zapisywac do pliku write ,read
 	classifier = ml::KNearest::create();
-	
+	svm = ml::SVM::create();
 
 }
 
@@ -28,11 +28,11 @@ bool DigitRecognizer::train(cv::String path)
 	prepareTraining(&matTrainingImagesFlattened, &matClassificationInts, path);
 
 	classifier->train(matTrainingImagesFlattened, ml::ROW_SAMPLE, matClassificationInts);
-	return true;
+	//return true;
 
 
 	// Set up SVM for OpenCV 3
-	svm = ml::SVM::create();
+	// svm = ml::SVM::create();
 	// Set SVM type
 	svm->setType(ml::SVM::C_SVC);
 	// Set SVM Kernel to Radial Basis Function (RBF) 
@@ -42,9 +42,12 @@ bool DigitRecognizer::train(cv::String path)
 	// Set parameter Gamma
 	svm->setGamma(0.50625);
 
+
 	// Train SVM on training data 
 	Ptr<ml::TrainData> td = ml::TrainData::create(matTrainingImagesFlattened, ml::ROW_SAMPLE, matClassificationInts);
-	svm->train(td);
+	//svm->train(td);
+
+	svm->trainAuto(td);
 
 	return true;
 
@@ -64,8 +67,13 @@ int DigitRecognizer::classify(Mat img)
 	//float result = matResult.at<float>(0, 0);
 
 
+<<<<<<< HEAD
 	return (int)(svm->predict(matImageFlattened, matResult));
 	//return 2;
+=======
+	return (int)(svm->predict(matImageFlattened.clone()));
+
+>>>>>>> d9e329750bf5eff9a4a446af47e3dfb0ee64ba11
 
 	//return int(result);
 }
@@ -125,7 +133,7 @@ cv::Mat DigitRecognizer::preprocessSudokuDigitImage(cv::Mat img) // TODO zmieniÄ
 	//Mat matImageFloat;
 	//matHuMoments.convertTo(matImageFloat, CV_32FC1);
 	//Mat matImageFlattenedFloat = matImageFloat.reshape(1, 1);
-	return descriptorMat;// matImageFlattenedFloat;
+	return descriptorMat.clone();// matImageFlattenedFloat;
 }
 
 Mat DigitRecognizer::preprocessImage(Mat img)
@@ -136,9 +144,10 @@ Mat DigitRecognizer::preprocessImage(Mat img)
 
 	cvtColor(img, matGrayscale, CV_BGR2GRAY);
 	GaussianBlur(matGrayscale, matBlurred, cv::Size(5, 5), 0);    
-	adaptiveThreshold(matBlurred, matThresh, 255, cv::ADAPTIVE_THRESH_GAUSSIAN_C, cv::THRESH_BINARY_INV, 11, 2);
+	adaptiveThreshold(matBlurred, matThresh, 255, cv::ADAPTIVE_THRESH_GAUSSIAN_C, cv::THRESH_BINARY, 11, 2);
 	
-	return preprocessSudokuDigitImage(matThresh);
+	Mat test = preprocessSudokuDigitImage(matThresh);
+	return test;
 
 	/*
 	Moments m = moments(matThresh, true);
@@ -164,6 +173,7 @@ void DigitRecognizer::addTrainingImage(cv::Mat * trainingImages, cv::Mat img)
 	resize(img, imgResized, cv::Size(RESIZED_IMAGE_WIDTH, RESIZED_IMAGE_HEIGHT)); //ewentualnie zakomentowac
 	
 	Mat matImageFlattenedFloat = preprocessImage(imgResized);
+
 	trainingImages->push_back(matImageFlattenedFloat);
 }
 
