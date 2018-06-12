@@ -26,15 +26,15 @@ public:
 
 	int classify(cv::Mat img); //przyjmuje kolorowe obrazy
 	int** classifyAll(cv::Mat** images); // testing function for classification of 2d arrays of images
-	cv::Mat preprocessSudokuDigitImage(cv::Mat img);
+	virtual cv::Mat preprocessSudokuDigitImage(cv::Mat img);
+	void addTrainingImage(cv::Mat* trainingImages, cv::Mat img);
 
 private:
-	void addTrainingImage(cv::Mat* trainingImages, cv::Mat img);
-	void prepareTraining(cv::Mat* trainingImages, cv::Mat* classificationInts, cv::String path);
+	
+	virtual void prepareTraining(cv::Mat* trainingImages, cv::Mat* classificationInts, cv::String path);
 	cv::Mat preprocessImage(cv::Mat img);
 
 private:
-	cv::Ptr<cv::ml::KNearest> classifier;
 	cv::Ptr<cv::ml::SVM> svm;
 	int numRows, numCols, numImages;
 

@@ -45,6 +45,9 @@
     <ClInclude Include="SudokuSolutionFinder.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="RedundantOnesRecognizer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Sudoku_Solver.cpp">
@@ -69,6 +72,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="SudokuSolutionFinder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RedundantOnesRecognizer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
