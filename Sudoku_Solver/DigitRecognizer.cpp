@@ -35,7 +35,7 @@ int DigitRecognizer::classify(Mat img)
 {
 	Mat matImageFlattened = preprocessSudokuDigitImage(img);
 	Mat matResult(0, 0, CV_32F);
-	classifier->findNearest(matImageFlattened, 5, matResult);
+	classifier->findNearest(matImageFlattened, 3, matResult);
 	float result = matResult.at<float>(0, 0);
 	return int(result);
 }
@@ -59,8 +59,28 @@ cv::Mat DigitRecognizer::preprocessSudokuDigitImage(cv::Mat img) // TODO zmieniÄ
 {
 	Mat imgResized;
 	
-	resize(img, imgResized, cv::Size(RESIZED_IMAGE_WIDTH, RESIZED_IMAGE_HEIGHT));
-	
+	resize(img, imgResized, cv::Size(128, 128));//RESIZED_IMAGE_WIDTH, RESIZED_IMAGE_HEIGHT));
+
+	HOGDescriptor hog(
+		Size(128, 128),//120, 120), //winSize
+		Size(64, 64),//10, 10),	//blocksize
+		Size(32, 32),//5, 5),		//blockStride,
+		Size(32, 32),//10, 10),	//cellSize,
+		9, //nbins,
+		1, //derivAper,
+		-1, //winSigma,
+		0, //histogramNormType,
+		0.2, //L2HysThresh,
+		1,//gammal correction,
+		64,//nlevels=64
+		1);//Use signed gradients 
+
+	std::vector<float> descriptor;
+	hog.compute(imgResized, descriptor);
+
+
+
+	/*
 
 	Moments m = moments(imgResized, true);
 
@@ -68,10 +88,14 @@ cv::Mat DigitRecognizer::preprocessSudokuDigitImage(cv::Mat img) // TODO zmieniÄ
 	Mat matHuMoments;
 	HuMoments(m, matHuMoments);
 	
-	Mat matImageFloat;
-	matHuMoments.convertTo(matImageFloat, CV_32FC1);
-	Mat matImageFlattenedFloat = matImageFloat.reshape(1, 1);
-	return matImageFlattenedFloat;
+	*/
+
+	Mat descriptorMat(1, 324, CV_32FC1, descriptor.data());
+
+	//Mat matImageFloat;
+	//matHuMoments.convertTo(matImageFloat, CV_32FC1);
+	//Mat matImageFlattenedFloat = matImageFloat.reshape(1, 1);
+	return descriptorMat;// matImageFlattenedFloat;
 }
 
 Mat DigitRecognizer::preprocessImage(Mat img)
@@ -83,7 +107,10 @@ Mat DigitRecognizer::preprocessImage(Mat img)
 	cvtColor(img, matGrayscale, CV_BGR2GRAY);
 	GaussianBlur(matGrayscale, matBlurred, cv::Size(5, 5), 0);    
 	adaptiveThreshold(matBlurred, matThresh, 255, cv::ADAPTIVE_THRESH_GAUSSIAN_C, cv::THRESH_BINARY_INV, 11, 2);
+	
+	return preprocessSudokuDigitImage(matThresh);
 
+	/*
 	Moments m = moments(matThresh, true);
 	Mat matHuMoments;
 	HuMoments(m, matHuMoments);
@@ -96,6 +123,7 @@ Mat DigitRecognizer::preprocessImage(Mat img)
 	Mat matImageFlattenedFloat = matImageFloat.reshape(1, 1);
 	return matImageFlattenedFloat;
 
+	*/
 	//return matHuMoments;
 }
 
@@ -103,7 +131,7 @@ void DigitRecognizer::addTrainingImage(cv::Mat * trainingImages, cv::Mat img)
 {
 	
 	Mat imgResized;
-	resize(img, imgResized, cv::Size(RESIZED_IMAGE_WIDTH, RESIZED_IMAGE_HEIGHT)); //ewentualnie zakomentowac
+	resize(img, imgResized, cv::Size(128, 128));//cv::Size(RESIZED_IMAGE_WIDTH, RESIZED_IMAGE_HEIGHT)); //ewentualnie zakomentowac
 	
 	Mat matImageFlattenedFloat = preprocessImage(imgResized);
 	trainingImages->push_back(matImageFlattenedFloat);

@@ -6,7 +6,7 @@
 using namespace cv;
 SudokuSolver::SudokuSolver()
 {
-	digitRecognizer.train("train_data");
+	digitRecognizer.train("train_data2");
 }
 
 
