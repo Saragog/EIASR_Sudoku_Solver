@@ -31,6 +31,7 @@ private:
 
 private:
 	cv::Ptr<cv::ml::KNearest> classifier;
+	cv::Ptr<cv::ml::SVM> svm;
 	int numRows, numCols, numImages;
 
 };

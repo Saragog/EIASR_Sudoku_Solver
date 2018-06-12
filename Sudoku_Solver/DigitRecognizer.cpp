@@ -4,8 +4,8 @@
 
 using namespace cv;
 
-#define RESIZED_IMAGE_WIDTH 120
-#define RESIZED_IMAGE_HEIGHT 120
+#define RESIZED_IMAGE_WIDTH 128
+#define RESIZED_IMAGE_HEIGHT 128
 
 DigitRecognizer::DigitRecognizer()
 {
@@ -29,6 +29,30 @@ bool DigitRecognizer::train(cv::String path)
 
 	classifier->train(matTrainingImagesFlattened, ml::ROW_SAMPLE, matClassificationInts);
 	return true;
+
+
+	// Set up SVM for OpenCV 3
+	svm = ml::SVM::create();
+	// Set SVM type
+	svm->setType(ml::SVM::C_SVC);
+	// Set SVM Kernel to Radial Basis Function (RBF) 
+	svm->setKernel(ml::SVM::RBF);
+	// Set parameter C
+	svm->setC(12.5);
+	// Set parameter Gamma
+	svm->setGamma(0.50625);
+
+	// Train SVM on training data 
+	Ptr<ml::TrainData> td = ml::TrainData::create(matTrainingImagesFlattened, ml::ROW_SAMPLE, matClassificationInts);
+	svm->train(td);
+
+	return true;
+
+	// Save trained model 
+	//svm->save("digits_svm_model.yml");
+
+	// Test on a held out test set
+	//svm->predict(testMat, testResponse);
 }
 
 int DigitRecognizer::classify(Mat img)
@@ -36,8 +60,13 @@ int DigitRecognizer::classify(Mat img)
 	Mat matImageFlattened = preprocessSudokuDigitImage(img);
 	Mat matResult(0, 0, CV_32F);
 	classifier->findNearest(matImageFlattened, 3, matResult);
-	float result = matResult.at<float>(0, 0);
-	return int(result);
+	//float result = matResult.at<float>(0, 0);
+
+
+	return (int)(svm->predict(matImageFlattened));
+
+
+	//return int(result);
 }
 
 int** DigitRecognizer::classifyAll(cv::Mat** images) // testing function for classification of 2d arrays of images
@@ -59,10 +88,10 @@ cv::Mat DigitRecognizer::preprocessSudokuDigitImage(cv::Mat img) // TODO zmieniÄ
 {
 	Mat imgResized;
 	
-	resize(img, imgResized, cv::Size(128, 128));//RESIZED_IMAGE_WIDTH, RESIZED_IMAGE_HEIGHT));
+	resize(img, imgResized, cv::Size(RESIZED_IMAGE_WIDTH, RESIZED_IMAGE_HEIGHT));
 
 	HOGDescriptor hog(
-		Size(128, 128),//120, 120), //winSize
+		Size(RESIZED_IMAGE_WIDTH, RESIZED_IMAGE_HEIGHT),//120, 120), //winSize
 		Size(64, 64),//10, 10),	//blocksize
 		Size(32, 32),//5, 5),		//blockStride,
 		Size(32, 32),//10, 10),	//cellSize,
@@ -131,7 +160,7 @@ void DigitRecognizer::addTrainingImage(cv::Mat * trainingImages, cv::Mat img)
 {
 	
 	Mat imgResized;
-	resize(img, imgResized, cv::Size(128, 128));//cv::Size(RESIZED_IMAGE_WIDTH, RESIZED_IMAGE_HEIGHT)); //ewentualnie zakomentowac
+	resize(img, imgResized, cv::Size(RESIZED_IMAGE_WIDTH, RESIZED_IMAGE_HEIGHT)); //ewentualnie zakomentowac
 	
 	Mat matImageFlattenedFloat = preprocessImage(imgResized);
 	trainingImages->push_back(matImageFlattenedFloat);
