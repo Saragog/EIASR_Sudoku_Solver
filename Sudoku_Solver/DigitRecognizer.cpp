@@ -38,7 +38,10 @@ bool DigitRecognizer::train(cv::String path)
 	// Set SVM Kernel to Radial Basis Function (RBF) 
 	svm->setKernel(ml::SVM::RBF);
 	// Set parameter C
+
 	svm->setC(50.5);
+
+
 	// Set parameter Gamma
 	svm->setGamma(0.50625);
 
@@ -62,14 +65,11 @@ int DigitRecognizer::classify(Mat img)
 {
 	Mat matImageFlattened = preprocessSudokuDigitImage(img);
 	Mat matResult(0, 0, CV_32F);
-
 	classifier->findNearest(matImageFlattened, 3, matResult);
 	//float result = matResult.at<float>(0, 0);
 
 
-
 	return (int)(svm->predict(matImageFlattened.clone()));
-
 
 
 	//return int(result);

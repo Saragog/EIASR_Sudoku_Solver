@@ -11,10 +11,12 @@ public:
 	static void showImage(cv::String, cv::Mat);
 	static void showImage(cv::String, int**, bool);
 	static void showImage(cv::String, cv::Mat**);
-	static cv::Mat joinImagesIntoOne(cv::Mat** images);
-	static cv::Mat** initializeFullImage();
+	static cv::Mat joinImagesIntoOne(cv::Mat**);
+	static cv::Mat** initializeFullImage(bool);
+	static void showDetectedSudoku(cv::String, int**);
 private:
-	static void drawCorners(cv::Mat&);
+	static void drawCorners(cv::Mat&, bool isBackgroundWhite = false);
 	static void drawCorrectnessToken(cv::Mat&, bool);
+	static cv::Mat createImageFromValues(int**, bool isBackgroundWhite = false);
 };
 
