@@ -1,6 +1,13 @@
+/*
+	Creators Andrzej Dackiewicz, Mateusz Jarzemski
+	This file is a part of a university project Sudoku Solver
+	that was developed as a EIASR project.
+	The aim is to create a software program, that is capable of recognizing sudoku problems
+	read from photographs. The program is using OpenCV library.
 
-// Sudoku_Solver.cpp : Defines the class behaviors for the application.
-//
+	This file describes a class that is used as a simple aplication that can be run from our
+	simple gui.
+*/
 
 #include "stdafx.h"
 #include "Sudoku_Solver.h"
@@ -22,8 +29,7 @@ END_MESSAGE_MAP()
 
 CSudoku_SolverApp::CSudoku_SolverApp()
 {
-	// TODO: add construction code here,
-	// Place all significant initialization in InitInstance
+
 }
 
 

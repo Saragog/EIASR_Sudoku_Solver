@@ -22,7 +22,7 @@ class SudokuSolutionFinder
 public:
 	SudokuSolutionFinder();
 	~SudokuSolutionFinder();
-	void solveProblem(cv::String problemPath);
+	void solveProblem(cv::String problemPath);  // solves a sudoku problem for an image file of specified path
 
 private:
 	SudokuImageReader sudokuImageReader;		// reads sudoku problem from an image
