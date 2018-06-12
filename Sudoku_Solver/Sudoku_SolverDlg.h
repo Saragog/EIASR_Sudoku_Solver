@@ -10,6 +10,7 @@
 #include "SudokuProblemSolver.h"
 #include "DigitRecognizer.h"
 #include "SudokuSolver.h"
+#include "resource.h"
 
 
 // CSudoku_SolverDlg dialog

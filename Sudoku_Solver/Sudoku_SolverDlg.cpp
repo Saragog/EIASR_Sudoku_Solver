@@ -34,6 +34,9 @@ public:
 // Implementation
 protected:
 	DECLARE_MESSAGE_MAP()
+
+	
+
 };
 
 CAboutDlg::CAboutDlg() : CDialogEx(IDD_ABOUTBOX)
@@ -57,6 +60,7 @@ CSudoku_SolverDlg::CSudoku_SolverDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(IDD_SUDOKU_SOLVER_DIALOG, pParent)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+	
 }
 
 void CSudoku_SolverDlg::DoDataExchange(CDataExchange* pDX)
@@ -105,6 +109,9 @@ BOOL CSudoku_SolverDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// Set small icon
 
 	// TODO: Add extra initialization here
+	CFont *m_pFont = new CFont();
+	m_pFont->CreatePointFont(120, _T("Arial"));
+	GetDlgItem(IDC_STATIC2)->SetFont(m_pFont, TRUE);
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
@@ -174,5 +181,7 @@ void CSudoku_SolverDlg::OnBnClickedLoadButton()
 	{
 		CT2CA convertedAnsiString(fOpenDlg.GetPathName());
 		path = std::string(convertedAnsiString);
+		(GetDlgItem(IDC_STATIC2))->SetWindowText(fOpenDlg.GetFileName());
+
 	}
 }

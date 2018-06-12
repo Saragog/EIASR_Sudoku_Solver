@@ -38,7 +38,7 @@ bool DigitRecognizer::train(cv::String path)
 	// Set SVM Kernel to Radial Basis Function (RBF) 
 	svm->setKernel(ml::SVM::RBF);
 	// Set parameter C
-	svm->setC(210.5);
+	svm->setC(50.5);
 	// Set parameter Gamma
 	svm->setGamma(0.50625);
 
