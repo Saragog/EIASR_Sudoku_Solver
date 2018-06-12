@@ -9,15 +9,14 @@ using namespace cv;
 
 DigitRecognizer::DigitRecognizer()
 {
-	//mozna zapisywac do pliku write ,read
-	classifier = ml::KNearest::create();
+	
 	svm = ml::SVM::create();
 
 }
 
 DigitRecognizer::~DigitRecognizer()
 {
-	classifier.release();
+	svm.release();
 }
 
 bool DigitRecognizer::train(cv::String path)
@@ -27,21 +26,18 @@ bool DigitRecognizer::train(cv::String path)
 
 	prepareTraining(&matTrainingImagesFlattened, &matClassificationInts, path);
 
-	classifier->train(matTrainingImagesFlattened, ml::ROW_SAMPLE, matClassificationInts);
-	//return true;
+	
+	
 
 
-	// Set up SVM for OpenCV 3
+
 	// svm = ml::SVM::create();
 	// Set SVM type
 	svm->setType(ml::SVM::C_SVC);
 	// Set SVM Kernel to Radial Basis Function (RBF) 
 	svm->setKernel(ml::SVM::RBF);
 	// Set parameter C
-
 	svm->setC(50.5);
-
-
 	// Set parameter Gamma
 	svm->setGamma(0.50625);
 
@@ -50,29 +46,21 @@ bool DigitRecognizer::train(cv::String path)
 	Ptr<ml::TrainData> td = ml::TrainData::create(matTrainingImagesFlattened, ml::ROW_SAMPLE, matClassificationInts);
 	svm->train(td);
 
-	//svm->trainAuto(td);
+	
 
 	return true;
 
 	// Save trained model 
 	//svm->save("digits_svm_model.yml");
 
-	// Test on a held out test set
-	//svm->predict(testMat, testResponse);
+	
 }
 
 int DigitRecognizer::classify(Mat img)
 {
 	Mat matImageFlattened = preprocessSudokuDigitImage(img);
-	Mat matResult(0, 0, CV_32F);
-	classifier->findNearest(matImageFlattened, 3, matResult);
-	//float result = matResult.at<float>(0, 0);
-
-
-	return (int)(svm->predict(matImageFlattened.clone()));
-
-
-	//return int(result);
+	
+	return (int)(svm->predict(matImageFlattened));
 }
 
 int** DigitRecognizer::classifyAll(cv::Mat** images) // testing function for classification of 2d arrays of images
@@ -86,21 +74,21 @@ int** DigitRecognizer::classifyAll(cv::Mat** images) // testing function for cla
 			classificationResults[row][col] = classify(images[row][col]);
 		}
 	}
-	delete images;
+	//delete images;
 	return classificationResults;
 }
 
-cv::Mat DigitRecognizer::preprocessSudokuDigitImage(cv::Mat img) // TODO zmieniÄ‡ tak, aby dzialalo lepiej :)
+cv::Mat DigitRecognizer::preprocessSudokuDigitImage(cv::Mat img) 
 {
 	Mat imgResized;
 	
 	resize(img, imgResized, cv::Size(RESIZED_IMAGE_WIDTH, RESIZED_IMAGE_HEIGHT));
 
 	HOGDescriptor hog(
-		Size(RESIZED_IMAGE_WIDTH, RESIZED_IMAGE_HEIGHT),//120, 120), //winSize
-		Size(64, 64),//10, 10),	//blocksize
-		Size(32, 32),//5, 5),		//blockStride,
-		Size(32, 32),//10, 10),	//cellSize,
+		Size(RESIZED_IMAGE_WIDTH, RESIZED_IMAGE_HEIGHT), //winSize
+		Size(64, 64),	//blocksize
+		Size(32, 32),	//blockStride,
+		Size(32, 32),	//cellSize,
 		9, //nbins,
 		1, //derivAper,
 		-1, //winSigma,
@@ -111,26 +99,11 @@ cv::Mat DigitRecognizer::preprocessSudokuDigitImage(cv::Mat img) // TODO zmieniÄ
 		1);//Use signed gradients 
 
 	std::vector<float> descriptor;
-	hog.compute(imgResized, descriptor);
+	hog.compute(imgResized, descriptor);	
 
-
-
-	/*
-
-	Moments m = moments(imgResized, true);
-
-	//sprobowac z normalizacja rozmiaru i cala bitmapa do knn
-	Mat matHuMoments;
-	HuMoments(m, matHuMoments);
+	Mat descriptorMat(1, descriptor.size(), CV_32FC1, descriptor.data());
 	
-	*/
-
-	Mat descriptorMat(1, 324, CV_32FC1, descriptor.data());
-
-	//Mat matImageFloat;
-	//matHuMoments.convertTo(matImageFloat, CV_32FC1);
-	//Mat matImageFlattenedFloat = matImageFloat.reshape(1, 1);
-	return descriptorMat.clone();// matImageFlattenedFloat;
+	return descriptorMat.clone();
 }
 
 Mat DigitRecognizer::preprocessImage(Mat img)
@@ -145,22 +118,7 @@ Mat DigitRecognizer::preprocessImage(Mat img)
 	
 	Mat test = preprocessSudokuDigitImage(matThresh);
 	return test;
-
-	/*
-	Moments m = moments(matThresh, true);
-	Mat matHuMoments;
-	HuMoments(m, matHuMoments);
-	double huhu[9];
-	HuMoments(m, huhu);
-	
-	
-	Mat matImageFloat;
-	matHuMoments.convertTo(matImageFloat, CV_32FC1);
-	Mat matImageFlattenedFloat = matImageFloat.reshape(1, 1);
-	return matImageFlattenedFloat;
-
-	*/
-	//return matHuMoments;
+		
 }
 
 void DigitRecognizer::addTrainingImage(cv::Mat * trainingImages, cv::Mat img)

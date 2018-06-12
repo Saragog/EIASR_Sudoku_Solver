@@ -7,6 +7,7 @@ using namespace cv;
 SudokuSolutionFinder::SudokuSolutionFinder()
 {
 	digitRecognizer.train("train_data");
+	redundantOnesRecognizer.train("train_data2");
 }
 
 
@@ -23,7 +24,7 @@ void SudokuSolutionFinder::solveProblem(String problemPath)
 	Mat** sudokuParts = sudokuImageReader.readSudokuFromImage(problemPath);
 	if (sudokuParts == NULL) return;
 	int** sudokuValues = digitRecognizer.classifyAll(sudokuParts);
-
+	redundantOnesRecognizer.classifyOnes(sudokuParts, sudokuValues);
 	// Detected numbers in original method
 
 	// checking if the detected numbers make sense
@@ -37,6 +38,8 @@ void SudokuSolutionFinder::solveProblem(String problemPath)
 
 	return;
 }
+
+
 
 /*
 hierarchy classification todo

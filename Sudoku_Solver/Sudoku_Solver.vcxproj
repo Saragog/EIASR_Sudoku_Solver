@@ -196,6 +196,7 @@
   <ItemGroup>
     <ClInclude Include="DigitRecognizer.h" />
     <ClInclude Include="ImageWindowCreator.h" />
+    <ClInclude Include="RedundantOnesRecognizer.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="SudokuImageReader.h" />
@@ -208,6 +209,7 @@
   <ItemGroup>
     <ClCompile Include="DigitRecognizer.cpp" />
     <ClCompile Include="ImageWindowCreator.cpp" />
+    <ClCompile Include="RedundantOnesRecognizer.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
