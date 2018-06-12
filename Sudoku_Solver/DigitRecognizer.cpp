@@ -35,7 +35,7 @@ int DigitRecognizer::classify(Mat img)
 {
 	Mat matImageFlattened = preprocessSudokuDigitImage(img);
 	Mat matResult(0, 0, CV_32F);
-	classifier->findNearest(matImageFlattened, 3, matResult);
+	classifier->findNearest(matImageFlattened, 5, matResult);
 	float result = matResult.at<float>(0, 0);
 	return int(result);
 }
