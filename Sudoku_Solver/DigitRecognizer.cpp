@@ -64,8 +64,8 @@ int DigitRecognizer::classify(Mat img)
 	//float result = matResult.at<float>(0, 0);
 
 
-	return (int)(svm->predict(matImageFlattened,true));
-
+	return (int)(svm->predict(matImageFlattened, matResult));
+	//return 2;
 
 	//return int(result);
 }
