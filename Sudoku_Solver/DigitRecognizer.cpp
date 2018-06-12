@@ -38,16 +38,16 @@ bool DigitRecognizer::train(cv::String path)
 	// Set SVM Kernel to Radial Basis Function (RBF) 
 	svm->setKernel(ml::SVM::RBF);
 	// Set parameter C
-	svm->setC(12.5);
+	svm->setC(100);//(12.5);
 	// Set parameter Gamma
-	svm->setGamma(0.50625);
+	svm->setGamma(0.9);//(0.50625);
 
 
 	// Train SVM on training data 
 	Ptr<ml::TrainData> td = ml::TrainData::create(matTrainingImagesFlattened, ml::ROW_SAMPLE, matClassificationInts);
-	//svm->train(td);
+	svm->train(td);
 
-	svm->trainAuto(td);
+	//svm->trainAuto(td);
 
 	return true;
 
