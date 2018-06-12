@@ -33,6 +33,8 @@ void SudokuSolver::solveProblem(String problemPath)
 	else { // Inappropriate values detected
 		ImageWindowCreator::showImage("Classification Result Image1", sudokuValues, false);
 	}
+	ImageWindowCreator::showDetectedSudoku("Sudoku problem detected", sudokuValues);
+
 	return;
 }
 

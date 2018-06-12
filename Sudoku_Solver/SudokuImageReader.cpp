@@ -54,7 +54,7 @@ Mat** SudokuImageReader::readSudokuFromImage(String path)
 	
 	// _____
 	// declare windows
-	ImageWindowCreator::showImage("Perspective removed", imgPerspective);												  
+	//ImageWindowCreator::showImage("Perspective removed", imgPerspective);												  
 														  
 	
 	// ________
@@ -110,7 +110,7 @@ void SudokuImageReader::prepareDigitImagesForDetection(cv::Mat** puzzleSquareDig
 
 	Mat combinedParts = joinImagesIntoOne(puzzleSquareDigitImages);
 
-	ImageWindowCreator::showImage("combinedParts Threshold", combinedParts);
+	//ImageWindowCreator::showImage("combinedParts Threshold", combinedParts);
 
 	//cv::Mat kernel = (cv::Mat_<uchar>(5, 5) << 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0);
 	cv::Mat kernel = (cv::Mat_<uchar>(3, 3) << 0, 1, 0, 1, 1, 1, 0, 1, 0);
@@ -129,7 +129,7 @@ void SudokuImageReader::prepareDigitImagesForDetection(cv::Mat** puzzleSquareDig
 	}
 
 	combinedParts = joinImagesIntoOne(puzzleSquareDigitImages);
-	ImageWindowCreator::showImage("combinedParts removedBorder", combinedParts);
+	//ImageWindowCreator::showImage("combinedParts removedBorder", combinedParts);
 
 	for (int row = 0; row < 9; row++)
 	{
@@ -146,7 +146,6 @@ void SudokuImageReader::prepareDigitImagesForDetection(cv::Mat** puzzleSquareDig
 
 			Mat translationMatrix = (Mat_<double>(2, 3) << 1, 0, deltaX, 0, 1, deltaY);
 			warpAffine(puzzleSquareDigitImages[row][col], puzzleSquareDigitImages[row][col], translationMatrix, puzzleSquareDigitImages[row][col].size());
-			//TODO sprawdzic skalowanie do wielkosci
 
 			erode(puzzleSquareDigitImages[row][col], puzzleSquareDigitImages[row][col], kernel);
 		}
@@ -187,21 +186,21 @@ cv::Mat SudokuImageReader::findAndRemovePerspective(cv::Mat input)
 		cv::Size(11, 11),					// smoothing window width and height in pixels
 		0);                               // sigma value, determines how much the image will be blurred
 
-	ImageWindowCreator::showImage("imgBlurred", imgBlurred);
+	//ImageWindowCreator::showImage("imgBlurred", imgBlurred);
 
 	cv::adaptiveThreshold(imgBlurred, imgThreshold, 255, cv::ADAPTIVE_THRESH_MEAN_C, cv::THRESH_BINARY_INV, 5, 1.5);
 
-	ImageWindowCreator::showImage("Img threshold", imgThreshold);
+	//ImageWindowCreator::showImage("Img threshold", imgThreshold);
 
 	cv::Mat kernel = (cv::Mat_<uchar>(3, 3) << 0, 1, 0, 1, 1, 1, 0, 1, 0);
 
 	cv::dilate(imgThreshold, imgThreshold, kernel);
 
-	ImageWindowCreator::showImage("Img Threshold Dilate", imgThreshold);
+	//ImageWindowCreator::showImage("Img Threshold Dilate", imgThreshold);
 	
 	imgBiggestBlob = findBiggestBlob(imgThreshold);
 
-	ImageWindowCreator::showImage("imgBiggestBlob", imgBiggestBlob);
+	//ImageWindowCreator::showImage("imgBiggestBlob", imgBiggestBlob);
 
 	std::vector<std::vector<Point>> contours;
 
@@ -211,7 +210,6 @@ cv::Mat SudokuImageReader::findAndRemovePerspective(cv::Mat input)
 	Point2f cornersf[4];
 
 	findCorners(contours, corners);
-	//TODO sprawdzenie czy punkty sa dobre
 
 	Mat imgDetectedCorners = imgBlurred.clone();
 	cv::cvtColor(imgDetectedCorners, imgDetectedCorners, CV_GRAY2BGR);
@@ -223,15 +221,15 @@ cv::Mat SudokuImageReader::findAndRemovePerspective(cv::Mat input)
 		cornersf[circleIndex] = Point2f(corners[circleIndex].x *resizeRatio, corners[circleIndex].y*resizeRatio);
 	}
 
-	ImageWindowCreator::showImage("Img Detected Corners", imgDetectedCorners);
+	//ImageWindowCreator::showImage("Img Detected Corners", imgDetectedCorners);
 
-	Point2f dst[] = { Point2f(0,0),Point2f(FLAT_IMAGE_WIDTH,0), Point2f(0,FLAT_IMAGE_HEIGHT),Point2f(FLAT_IMAGE_WIDTH,FLAT_IMAGE_HEIGHT) }; //1080/1080
+	Point2f dst[] = { Point2f(0,0),Point2f(FLAT_IMAGE_WIDTH,0), Point2f(0,FLAT_IMAGE_HEIGHT),Point2f(FLAT_IMAGE_WIDTH,FLAT_IMAGE_HEIGHT) };
 
 	Mat imgPerspective;
 	Mat M = getPerspectiveTransform(cornersf, dst);
 	warpPerspective(input, imgPerspective, M, Size(FLAT_IMAGE_WIDTH, FLAT_IMAGE_HEIGHT));
 
-	ImageWindowCreator::showImage("Img Perspective", imgPerspective);
+	//ImageWindowCreator::showImage("Img Perspective", imgPerspective);
 
 	return imgPerspective;
 }

@@ -26,6 +26,7 @@ void ImageWindowCreator::showImage(cv::String windowName, Mat** partialImages)
 
 void ImageWindowCreator::showImage(cv::String windowName, int** values, bool isImageAppropriate)
 {
+	/*
 	cv::Mat fullImage;
 	cv::Mat** resultImageParts = initializeFullImage();
 	for (int row = 0; row < 9; row++)
@@ -35,20 +36,51 @@ void ImageWindowCreator::showImage(cv::String windowName, int** values, bool isI
 	delete resultImageParts;
 
 	drawCorners(fullImage);
-	drawCorrectnessToken(fullImage, isImageAppropriate);
+	*/
+	cv::Mat image = createImageFromValues(values);
+	drawCorrectnessToken(image, isImageAppropriate);
 	// ______
-	showImage(windowName, fullImage);
+	showImage(windowName, image);
 }
 
-cv::Mat** ImageWindowCreator::initializeFullImage()
+cv::Mat ImageWindowCreator::createImageFromValues(int** values, bool isBackgroundWhite)
+{
+	cv::Mat fullImage;
+	Scalar digitsColour;
+	cv::Mat** resultImageParts = initializeFullImage(isBackgroundWhite);
+	if (isBackgroundWhite == true) digitsColour = CV_RGB(0, 0, 0);
+	else digitsColour = CV_RGB(0, 0, 255);
+	for (int row = 0; row < 9; row++)
+		for (int col = 0; col < 9; col++)
+			putText(resultImageParts[row][col], std::to_string(values[row][col]), Point(30, 70), cv::FONT_HERSHEY_TRIPLEX/*FONT_HERSHEY_COMPLEX*/, 1, digitsColour);//CV_RGB(0, 0, 255));
+	fullImage = joinImagesIntoOne(resultImageParts);
+	delete resultImageParts;
+	drawCorners(fullImage, isBackgroundWhite);
+	return fullImage;
+}
+
+void ImageWindowCreator::showDetectedSudoku(cv::String windowName, int** values)
+{
+	cv::Mat image = createImageFromValues(values, true);
+	showImage(windowName, image);
+}
+
+cv::Mat** ImageWindowCreator::initializeFullImage(bool isBackgroundWhite)
 {
 	cv::Mat** imageParts = new cv::Mat*[9];
+	//Scalar backgroundColour;
+	//if (isBackgroundWhite == true) backgroundColour = Scalar(0, 0, 255);
+	//else backgroundColour = Scalar(0, 0, 0);
 	for (int r = 0; r < 9; r++)
 	{
 		imageParts[r] = new Mat[9];
 		for (int c = 0; c < 9; c++)
 		{
-			imageParts[r][c] = Mat(100, 100, CV_8UC1, Scalar(0, 0, 0));
+			if (isBackgroundWhite == true) imageParts[r][c] = Mat(100, 100, CV_8UC1, CV_RGB(0,0,255));
+			else imageParts[r][c] = Mat(100, 100, CV_8UC1, CV_RGB(0,0,0));
+
+
+			//imageParts[r][c] = Mat(100, 100, CV_8UC1, backgroundColour);
 		}
 	}
 	return imageParts;
@@ -86,12 +118,15 @@ Narazie zrobione na sztywno po 100 pikseli natomiast potem trzeba to gdzies stat
 /*
 	This function draws sudoku edges on the combined image
 */
-void ImageWindowCreator::drawCorners(cv::Mat& image)
+void ImageWindowCreator::drawCorners(cv::Mat& image, bool isBackgroundWhite)
 {
+	Scalar lineColour;
+	if (isBackgroundWhite == true) lineColour = CV_RGB(0, 0, 0);
+	else lineColour = CV_RGB(0, 0, 255);
 	for (int row = 0; row < 10; row++)
-		line(image, Point(0, row * 100), Point(1000, row * 100), CV_RGB(0,0,255), 2/*, int lineType = 8, int shift = 0*/);
+		line(image, Point(0, row * 100), Point(1000, row * 100), lineColour, 2/*, int lineType = 8, int shift = 0*/);
 	for (int column = 0; column < 10; column++)
-		line(image, Point(column * 100, 0), Point(column * 100, 1000), CV_RGB(0, 0, 255), 2);
+		line(image, Point(column * 100, 0), Point(column * 100, 1000), lineColour, 2);
 	return;
 }
 
