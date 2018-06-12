@@ -39,10 +39,10 @@
     <ClInclude Include="SudokuProblemSolver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SudokuSolver.h">
+    <ClInclude Include="ImageWindowCreator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ImageWindowCreator.h">
+    <ClInclude Include="SudokuSolutionFinder.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -65,10 +65,10 @@
     <ClCompile Include="SudokuProblemSolver.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SudokuSolver.cpp">
+    <ClCompile Include="ImageWindowCreator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ImageWindowCreator.cpp">
+    <ClCompile Include="SudokuSolutionFinder.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

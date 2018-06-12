@@ -9,7 +9,7 @@
 #include "SudokuImageReader.h"
 #include "SudokuProblemSolver.h"
 #include "DigitRecognizer.h"
-#include "SudokuSolver.h"
+#include "SudokuSolutionFinder.h"
 
 
 // CSudoku_SolverDlg dialog
@@ -41,7 +41,7 @@ protected:
 
 private:
 	std::string path;							// plik wejsciowy
-	SudokuSolver solver;						// solver that does all processes needed for solving the problem
+	SudokuSolutionFinder solver;						// solver that does all processes needed for solving the problem
 
 
 public:

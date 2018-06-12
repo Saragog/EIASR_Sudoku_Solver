@@ -1,20 +1,20 @@
 #include "stdafx.h"
-#include "SudokuSolver.h"
+#include "SudokuSolutionFinder.h"
 
 #include "ImageWindowCreator.h"
 
 using namespace cv;
-SudokuSolver::SudokuSolver()
+SudokuSolutionFinder::SudokuSolutionFinder()
 {
 	digitRecognizer.train("train_data");
 }
 
 
-SudokuSolver::~SudokuSolver()
+SudokuSolutionFinder::~SudokuSolutionFinder()
 {
 }
 
-void SudokuSolver::solveProblem(String problemPath)
+void SudokuSolutionFinder::solveProblem(String problemPath)
 {
 	// TODO implement other methods for detecting numbers and run checkIfSudokuProblemIsAppropriate(int**) function
 	// for checking if the problem is appropriate

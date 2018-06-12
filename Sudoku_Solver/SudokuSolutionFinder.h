@@ -5,11 +5,11 @@
 #include "DigitRecognizer.h"
 #include<opencv2/opencv.hpp> 
 
-class SudokuSolver
+class SudokuSolutionFinder
 {
 public:
-	SudokuSolver();
-	~SudokuSolver();
+	SudokuSolutionFinder();
+	~SudokuSolutionFinder();
 	void solveProblem(cv::String problemPath);
 
 private:
