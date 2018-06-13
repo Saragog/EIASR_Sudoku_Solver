@@ -1,3 +1,15 @@
+/*
+	Creators Andrzej Dackiewicz, Mateusz Jarzemski
+	This file is a part of a university project Sudoku Solver
+	that was developed as a EIASR project.
+	The aim is to create a software program, that is capable of recognizing sudoku problems
+	read from photographs. The program is using OpenCV library.
+
+	This file describes a class that is used for checking if the recognized placement of digits
+	is appropriate to be a representative of a sudoku problem. This class will be later on improved with
+	the power to solve given sudoku problems.
+*/
+
 #include "stdafx.h"
 #include "SudokuProblemSolver.h"
 

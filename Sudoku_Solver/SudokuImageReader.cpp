@@ -1,3 +1,15 @@
+/*
+	Creators Andrzej Dackiewicz, Mateusz Jarzemski
+	This file is a part of a university project Sudoku Solver
+	that was developed as a EIASR project.
+	The aim is to create a software program, that is capable of recognizing sudoku problems
+	read from photographs. The program is using OpenCV library.
+
+	This file describes a class that is used for reading image from file, performing operations that
+	are used for extracting images of single digits representing the sudoku problem. Later on these images
+	give us information about what digits are placed on the sudoku problem image.
+*/
+
 #include "stdafx.h"
 #include "SudokuImageReader.h"
 #include "ImageWindowCreator.h"
@@ -51,41 +63,9 @@ Mat** SudokuImageReader::readSudokuFromImage(String path)
 
 	prepareDigitImagesForDetection(puzzleSquareDigitsImages);
 
-	
-	// _____
-	// declare windows
 	ImageWindowCreator::showImage("Perspective removed", imgPerspective);												  
-														  
-	
-	// ________
 
 	return puzzleSquareDigitsImages;
-}
-
-Mat SudokuImageReader::joinImagesIntoOne(cv::Mat** images) // testing method for showing progress in whole image
-{
-	Mat wholeImage;
-	
-	std::vector<Mat> rows;
-	std::vector<Mat> cols;
-	if (images != NULL)
-	{
-		for (int row = 0; row < 9; row++)
-		{
-			cols.clear();
-			for (int col = 0; col < 9; col++)
-				cols.push_back(images[row][col]);
-			rows.push_back(Mat());
-			hconcat(cols, rows[row]);
-		}
-		vconcat(rows, wholeImage);
-		
-	}
-	// TODO show sudoku solution
-	// TODO clean the sudoku problem 2d array somewhere (delete)
-
-	return wholeImage;
-
 }
 
 void SudokuImageReader::prepareDigitImagesForDetection(cv::Mat** puzzleSquareDigitImages)
@@ -98,7 +78,7 @@ void SudokuImageReader::prepareDigitImagesForDetection(cv::Mat** puzzleSquareDig
 
 			cv::GaussianBlur(puzzleSquareDigitImages[row][col],         // input image
 				puzzleSquareDigitImages[row][col],						// output image
-				cv::Size(5, 5),										// smoothing window width and height in pixels
+				cv::Size(5, 5),											// smoothing window width and height in pixels
 				0);														// sigma value, determines how much the image will be blurred
 			
 
@@ -108,7 +88,7 @@ void SudokuImageReader::prepareDigitImagesForDetection(cv::Mat** puzzleSquareDig
 		}
 	}
 
-	Mat combinedParts = joinImagesIntoOne(puzzleSquareDigitImages);
+	Mat combinedParts = ImageWindowCreator::joinImagesIntoOne(puzzleSquareDigitImages);
 
 	//ImageWindowCreator::showImage("combinedParts Threshold", combinedParts);
 
@@ -128,7 +108,7 @@ void SudokuImageReader::prepareDigitImagesForDetection(cv::Mat** puzzleSquareDig
 		}
 	}
 
-	combinedParts = joinImagesIntoOne(puzzleSquareDigitImages);
+	combinedParts = ImageWindowCreator::joinImagesIntoOne(puzzleSquareDigitImages);
 	ImageWindowCreator::showImage("combinedParts removedBorder", combinedParts);
 
 	for (int row = 0; row < 9; row++)

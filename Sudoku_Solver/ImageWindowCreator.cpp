@@ -1,4 +1,15 @@
-﻿#include "stdafx.h"
+﻿/*
+	Creators Andrzej Dackiewicz, Mateusz Jarzemski
+	This file is a part of a university project Sudoku Solver
+	that was developed as a EIASR project.
+	The aim is to create a software program, that is capable of recognizing sudoku problems
+	read from photographs. The program is using OpenCV library.
+
+	This file describes a class that is used for showing results and partial results of
+	image computation.
+*/
+
+#include "stdafx.h"
 #include "ImageWindowCreator.h"
 
 using namespace cv;
