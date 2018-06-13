@@ -76,8 +76,8 @@ bool RedundantOnesRecognizer::train(cv::String path)
 
 	// Train SVM on training data 
 	Ptr<ml::TrainData> td = ml::TrainData::create(matTrainingImagesFlattened, ml::ROW_SAMPLE, matClassificationInts);
-	//svm->train(td);
-	svm->trainAuto(td);
+	svm->train(td);
+	//svm->trainAuto(td);
 
 
 	return true;

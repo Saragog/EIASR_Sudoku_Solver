@@ -49,12 +49,7 @@ bool DigitRecognizer::train(cv::String path)
 
 	
 
-	return true;
-
-	// Save trained model 
-	//svm->save("digits_svm_model.yml");
-
-	
+	return true;	
 }
 
 int DigitRecognizer::classify(Mat img)
@@ -75,7 +70,6 @@ int** DigitRecognizer::classifyAll(cv::Mat** images) // testing function for cla
 			classificationResults[row][col] = classify(images[row][col]);
 		}
 	}
-	//delete images;
 	return classificationResults;
 }
 
