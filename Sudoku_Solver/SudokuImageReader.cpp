@@ -100,8 +100,7 @@ void SudokuImageReader::prepareDigitImagesForDetection(cv::Mat** puzzleSquareDig
 		{
 			
 			cv::dilate(puzzleSquareDigitImages[row][col], puzzleSquareDigitImages[row][col], kernel); 
-			
-			
+					
 
 			removeBorderFromImage(puzzleSquareDigitImages[row][col]);
 			findBiggestBlob(puzzleSquareDigitImages[row][col]);
@@ -128,6 +127,7 @@ void SudokuImageReader::prepareDigitImagesForDetection(cv::Mat** puzzleSquareDig
 			warpAffine(puzzleSquareDigitImages[row][col], puzzleSquareDigitImages[row][col], translationMatrix, puzzleSquareDigitImages[row][col].size());
 
 			erode(puzzleSquareDigitImages[row][col], puzzleSquareDigitImages[row][col], kernel);
+			
 		}
 	}
 
