@@ -22,12 +22,14 @@ ImageWindowCreator::~ImageWindowCreator()
 {
 }
 
+// Shows an image
 void ImageWindowCreator::showImage(String windowName, cv::Mat image)
 {
 	cv::namedWindow(windowName, CV_WINDOW_NORMAL);
 	cv::imshow(windowName, image);
 }
 
+// Joins smaller images into one and shows it
 void ImageWindowCreator::showImage(cv::String windowName, Mat** partialImages)
 {
 	cv::Mat fullImage = joinImagesIntoOne(partialImages);
@@ -35,25 +37,15 @@ void ImageWindowCreator::showImage(cv::String windowName, Mat** partialImages)
 	showImage(windowName, fullImage);
 }
 
+// Creates an image of a sudoku problem, checks if it is appropriate and shows the image
 void ImageWindowCreator::showImage(cv::String windowName, int** values, bool isImageAppropriate)
 {
-	/*
-	cv::Mat fullImage;
-	cv::Mat** resultImageParts = initializeFullImage();
-	for (int row = 0; row < 9; row++)
-		for (int col = 0; col < 9; col++)
-			putText(resultImageParts[row][col], std::to_string(values[row][col]), Point(10, 40), cv::FONT_HERSHEY_COMPLEX, 1, CV_RGB(0, 0, 255));
-	fullImage = joinImagesIntoOne(resultImageParts);
-	delete resultImageParts;
-
-	drawCorners(fullImage);
-	*/
 	cv::Mat image = createImageFromValues(values);
 	drawCorrectnessToken(image, isImageAppropriate);
-	// ______
 	showImage(windowName, image);
 }
 
+// Shows the final result of digit recognition
 cv::Mat ImageWindowCreator::createImageFromValues(int** values, bool isBackgroundWhite)
 {
 	cv::Mat fullImage;
@@ -64,7 +56,7 @@ cv::Mat ImageWindowCreator::createImageFromValues(int** values, bool isBackgroun
 	for (int row = 0; row < 9; row++)
 		for (int col = 0; col < 9; col++)
 			if(values[row][col] != 0)
-				putText(resultImageParts[row][col], std::to_string(values[row][col]), Point(20, 75), cv::FONT_HERSHEY_DUPLEX/*FONT_HERSHEY_COMPLEX*/, 2.5, digitsColour,2);//CV_RGB(0, 0, 255));
+				putText(resultImageParts[row][col], std::to_string(values[row][col]), Point(20, 75), cv::FONT_HERSHEY_DUPLEX, 2.5, digitsColour,2);
 	fullImage = joinImagesIntoOne(resultImageParts);
 	delete resultImageParts;
 	drawLines(fullImage, isBackgroundWhite);
@@ -80,9 +72,6 @@ void ImageWindowCreator::showDetectedSudoku(cv::String windowName, int** values)
 cv::Mat** ImageWindowCreator::initializeFullImage(bool isBackgroundWhite)
 {
 	cv::Mat** imageParts = new cv::Mat*[9];
-	//Scalar backgroundColour;
-	//if (isBackgroundWhite == true) backgroundColour = Scalar(0, 0, 255);
-	//else backgroundColour = Scalar(0, 0, 0);
 	for (int r = 0; r < 9; r++)
 	{
 		imageParts[r] = new Mat[9];
@@ -90,9 +79,6 @@ cv::Mat** ImageWindowCreator::initializeFullImage(bool isBackgroundWhite)
 		{
 			if (isBackgroundWhite == true) imageParts[r][c] = Mat(100, 100, CV_8UC1, CV_RGB(0,0,255));
 			else imageParts[r][c] = Mat(100, 100, CV_8UC1, CV_RGB(0,0,0));
-
-
-			//imageParts[r][c] = Mat(100, 100, CV_8UC1, backgroundColour);
 		}
 	}
 	return imageParts;
