@@ -1,4 +1,14 @@
-﻿#include "stdafx.h"
+﻿/*
+Creators Andrzej Dackiewicz, Mateusz Jarzemski
+This file is a part of a university project Sudoku Solver
+that was developed as a EIASR project.
+The aim is to create a software program, that is capable of recognizing sudoku problems
+read from photographs. The program is using OpenCV library.
+
+This file describes a class that is used for digit recognition.
+*/
+
+#include "stdafx.h"
 #include "DigitRecognizer.h"
 #include "SudokuImageReader.h"
 
@@ -19,6 +29,7 @@ DigitRecognizer::~DigitRecognizer()
 	svm.release();
 }
 
+// Training of model
 bool DigitRecognizer::train(cv::String path)
 {
 	Mat matTrainingImagesFlattened;
@@ -26,12 +37,6 @@ bool DigitRecognizer::train(cv::String path)
 
 	prepareTraining(&matTrainingImagesFlattened, &matClassificationInts, path);
 
-	
-	
-
-
-
-	// svm = ml::SVM::create();
 	// Set SVM type
 	svm->setType(ml::SVM::C_SVC);
 	// Set SVM Kernel to Radial Basis Function (RBF) 
@@ -41,24 +46,23 @@ bool DigitRecognizer::train(cv::String path)
 	// Set parameter Gamma
 	svm->setGamma(0.50625);
 
-
 	// Train SVM on training data 
 	Ptr<ml::TrainData> td = ml::TrainData::create(matTrainingImagesFlattened, ml::ROW_SAMPLE, matClassificationInts);
 	//svm->train(td);
 	svm->trainAuto(td);
 
-	
-
 	return true;	
 }
 
+// Classification of a single digit image
 int DigitRecognizer::classify(Mat img)
 {
 	Mat matImageFlattened = preprocessSudokuDigitImage(img);
-	
 	return (int)(svm->predict(matImageFlattened));
 }
 
+// Classifies all the single digit images
+// Returns an array of detected digits (0 for empty fields)
 int** DigitRecognizer::classifyAll(cv::Mat** images) // testing function for classification of 2d arrays of images
 {
 	int** classificationResults = new int*[9];
@@ -73,6 +77,7 @@ int** DigitRecognizer::classifyAll(cv::Mat** images) // testing function for cla
 	return classificationResults;
 }
 
+// Preprocesses single image digits
 cv::Mat DigitRecognizer::preprocessSudokuDigitImage(cv::Mat img) 
 {
 	Mat imgResized;
@@ -101,6 +106,7 @@ cv::Mat DigitRecognizer::preprocessSudokuDigitImage(cv::Mat img)
 	return descriptorMat.clone();
 }
 
+// Preprocesses images
 Mat DigitRecognizer::preprocessImage(Mat img)
 {
 	Mat matGrayscale;           
@@ -116,6 +122,7 @@ Mat DigitRecognizer::preprocessImage(Mat img)
 		
 }
 
+// Adds training images
 void DigitRecognizer::addTrainingImage(cv::Mat * trainingImages, cv::Mat img)
 {
 	
@@ -127,14 +134,13 @@ void DigitRecognizer::addTrainingImage(cv::Mat * trainingImages, cv::Mat img)
 	trainingImages->push_back(matImageFlattenedFloat);
 }
 
+// adds files for learning algorythm
 void DigitRecognizer::prepareTraining(cv::Mat * trainingImages, cv::Mat * classificationInts, cv::String path)
 {
-	//pliki
-
-	for (int i = 0; i < 10; i++) //cyfry
+	for (int i = 0; i < 10; i++) //digits
 	{
 		char folder = i + '0';
-		String tempPath = path + "\\" + folder + "\\*.png"; // TODO poprawic jak bedzie wiadomo jakie pliki
+		String tempPath = path + "\\" + folder + "\\*.png";
 		std::vector<String> filenames;
 
 		glob(tempPath, filenames); 
@@ -149,8 +155,6 @@ void DigitRecognizer::prepareTraining(cv::Mat * trainingImages, cv::Mat * classi
 			}
 			addTrainingImage(trainingImages, src);
 			classificationInts->push_back(i);
-
-
 		}
 
 	}

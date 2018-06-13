@@ -12,10 +12,11 @@
 
 #include "stdafx.h"
 #include "SudokuSolutionFinder.h"
-
 #include "ImageWindowCreator.h"
-
 using namespace cv;
+
+// The constructor prepares both recognizers
+// The main recognizer and the secondary recognizer for detecting ones
 SudokuSolutionFinder::SudokuSolutionFinder()
 {
 	digitRecognizer.train("train_data");
@@ -27,12 +28,10 @@ SudokuSolutionFinder::~SudokuSolutionFinder()
 {
 }
 
+
+// This function reads the image from a file in specified path and runs classificators
 void SudokuSolutionFinder::solveProblem(String problemPath)
 {
-	// TODO implement other methods for detecting numbers and run checkIfSudokuProblemIsAppropriate(int**) function
-	// for checking if the problem is appropriate
-	// If all attempts fail (all the combinations of detected numbers are inappropriate) then we inform the user about it
-
 	Mat** sudokuParts = sudokuImageReader.readSudokuFromImage(problemPath);
 	if (sudokuParts == NULL) return;
 	int** sudokuValues = digitRecognizer.classifyAll(sudokuParts);
@@ -50,12 +49,3 @@ void SudokuSolutionFinder::solveProblem(String problemPath)
 
 	return;
 }
-
-
-
-/*
-hierarchy classification todo
-dodac typy obrazu do dokumentacji ok 20 obrazow testowych
-za malo danych do rozpoznawania do nauczenia
-zamienic na angielski i doslac
-*/

@@ -48,7 +48,6 @@ Mat** SudokuImageReader::readSudokuFromImage(String path)
 	imgOriginal = cv::imread(path);
 
 	if (imgOriginal.empty()) {                                  // if unable to open image
-																//TODO messege box
 		std::cout << "error: image not read from file\n\n";     // show error message on command line
 		_getch();                                               // may have to modify this line if not using Windows
 		return NULL;                                            // and exit program
@@ -57,7 +56,6 @@ Mat** SudokuImageReader::readSudokuFromImage(String path)
 	ImageWindowCreator::showImage("Original Image", imgOriginal);
 
 	imgPerspective = findAndRemovePerspective(imgOriginal);
-
 
 	puzzleSquareDigitsImages = cutPuzzleImageIntoDigitsImages(imgPerspective); // cuts puzzle into ditits images
 
@@ -68,6 +66,7 @@ Mat** SudokuImageReader::readSudokuFromImage(String path)
 	return puzzleSquareDigitsImages;
 }
 
+// Prepares the parts of the image with digits for digit classification
 void SudokuImageReader::prepareDigitImagesForDetection(cv::Mat** puzzleSquareDigitImages)
 {
 	for (int row = 0; row < 9; row++)
@@ -90,17 +89,14 @@ void SudokuImageReader::prepareDigitImagesForDetection(cv::Mat** puzzleSquareDig
 
 	Mat combinedParts = ImageWindowCreator::joinImagesIntoOne(puzzleSquareDigitImages);
 
-	ImageWindowCreator::showImage("combinedParts Threshold", combinedParts);
+	//ImageWindowCreator::showImage("combinedParts Threshold", combinedParts);
 
 	cv::Mat kernel = (cv::Mat_<uchar>(3, 3) << 0, 1, 0, 1, 1, 1, 0, 1, 0);
 	for (int row = 0; row < 9; row++)
 	{
 		for (int col = 0; col < 9; col++)
 		{
-			
 			cv::dilate(puzzleSquareDigitImages[row][col], puzzleSquareDigitImages[row][col], kernel); 
-					
-
 			removeBorderFromImage(puzzleSquareDigitImages[row][col]);
 			findBiggestBlob(puzzleSquareDigitImages[row][col]);
 		}
@@ -133,7 +129,7 @@ void SudokuImageReader::prepareDigitImagesForDetection(cv::Mat** puzzleSquareDig
 }
 
 
-
+// Removes border from an image
 void SudokuImageReader::removeBorderFromImage(cv::Mat puzzleSquareDigitImage)
 {
 	int xDimSize = puzzleSquareDigitImage.size().width;
@@ -149,12 +145,12 @@ void SudokuImageReader::removeBorderFromImage(cv::Mat puzzleSquareDigitImage)
 	}
 }
 
-
+// Finds and removes perspective from a problem image
 cv::Mat SudokuImageReader::findAndRemovePerspective(cv::Mat input)
 {
 	cv::Mat imgBlurred;         // intermediate blured image
 	cv::Mat imgThreshold;		// tresholded image
-	cv::Mat imgBiggestBlob;
+	cv::Mat imgBiggestBlob;		// biggest blob image
 
 	resize(input, imgBlurred, cv::Size((input.size().width*1200)/input.size().height, 1200)); // przeskalowanie z zachowaniem proporcji
 
@@ -165,21 +161,21 @@ cv::Mat SudokuImageReader::findAndRemovePerspective(cv::Mat input)
 		cv::Size(11, 11),					// smoothing window width and height in pixels
 		0);                               // sigma value, determines how much the image will be blurred
 
-	ImageWindowCreator::showImage("imgBlurred", imgBlurred);
+	//ImageWindowCreator::showImage("imgBlurred", imgBlurred);
 
 	cv::adaptiveThreshold(imgBlurred, imgThreshold, 255, cv::ADAPTIVE_THRESH_MEAN_C, cv::THRESH_BINARY_INV, 5, 1.5);
 
-	ImageWindowCreator::showImage("Img threshold", imgThreshold);
+	//ImageWindowCreator::showImage("Img threshold", imgThreshold);
 
 	cv::Mat kernel = (cv::Mat_<uchar>(3, 3) << 0, 1, 0, 1, 1, 1, 0, 1, 0);
 
 	cv::dilate(imgThreshold, imgThreshold, kernel);
 
-	ImageWindowCreator::showImage("Img Threshold Dilate", imgThreshold);
+	//ImageWindowCreator::showImage("Img Threshold Dilate", imgThreshold);
 	
 	imgBiggestBlob = findBiggestBlob(imgThreshold);
 
-	ImageWindowCreator::showImage("imgBiggestBlob", imgBiggestBlob);
+	//ImageWindowCreator::showImage("imgBiggestBlob", imgBiggestBlob);
 
 	std::vector<std::vector<Point>> contours;
 
@@ -188,11 +184,12 @@ cv::Mat SudokuImageReader::findAndRemovePerspective(cv::Mat input)
 	std::vector<Point> corners;
 	Point2f cornersf[4];
 
-	findCorners(contours, corners);
+	findCorners(contours, corners);   // Finding corners of a sudoku problem
 
 	Mat imgDetectedCorners = imgBlurred.clone();
 	cv::cvtColor(imgDetectedCorners, imgDetectedCorners, CV_GRAY2BGR);
 
+	// Preparing an image with red dots showing where the corners of a sudoku problem were found
 	float resizeRatio = (float)input.size().height / 1200;
 	for (int circleIndex = 0; circleIndex < 4; circleIndex++)
 	{
@@ -200,19 +197,21 @@ cv::Mat SudokuImageReader::findAndRemovePerspective(cv::Mat input)
 		cornersf[circleIndex] = Point2f(corners[circleIndex].x *resizeRatio, corners[circleIndex].y*resizeRatio);
 	}
 
-	ImageWindowCreator::showImage("Img Detected Corners", imgDetectedCorners);
+	//ImageWindowCreator::showImage("Img Detected Corners", imgDetectedCorners);
 
 	Point2f dst[] = { Point2f(0,0),Point2f(FLAT_IMAGE_WIDTH,0), Point2f(0,FLAT_IMAGE_HEIGHT),Point2f(FLAT_IMAGE_WIDTH,FLAT_IMAGE_HEIGHT) };
 
+	// Removing the perspective from an image
 	Mat imgPerspective;
 	Mat M = getPerspectiveTransform(cornersf, dst);
 	warpPerspective(input, imgPerspective, M, Size(FLAT_IMAGE_WIDTH, FLAT_IMAGE_HEIGHT));
 
-	ImageWindowCreator::showImage("Img Perspective", imgPerspective);
+	//ImageWindowCreator::showImage("Img Perspective", imgPerspective);
 
 	return imgPerspective;
 }
 
+// Finding the biggest blob - the border of our sudoku problem
 cv::Mat SudokuImageReader::findBiggestBlob(cv::Mat input)
 {
 	Mat imgBiggestBlob(input);
@@ -246,8 +245,7 @@ cv::Mat SudokuImageReader::findBiggestBlob(cv::Mat input)
 		imgBiggestBlob = Mat::zeros(imgBiggestBlob.size(), imgBiggestBlob.type());
 		return imgBiggestBlob;	
 	}
-
-
+ 
 	floodFill(imgBiggestBlob, maxPt, CV_RGB(255, 255, 255));
 
 
@@ -265,6 +263,7 @@ cv::Mat SudokuImageReader::findBiggestBlob(cv::Mat input)
 	return imgBiggestBlob;
 }
 
+// Cutting a sudoku problem into small images with single digits printed on them
 Mat** SudokuImageReader::cutPuzzleImageIntoDigitsImages(cv::Mat imageToBeCut)
 {
 	cv::Mat** digitsImages = new cv::Mat*[9];
@@ -295,12 +294,10 @@ Mat** SudokuImageReader::cutPuzzleImageIntoDigitsImages(cv::Mat imageToBeCut)
 			digitsImages[row][col] = cv::Mat(imageToBeCut, rect).clone();
 		}
 	}
-
-	// TODO remember to clean that digitsImages array !!!
-
 	return digitsImages;
 }
 
+// Finding Corners of a sudoku problem
 void SudokuImageReader::findCorners(std::vector<std::vector<Point>> contours, std::vector<Point> &corners)
 {
 	corners.push_back(Point(contours[0][0]));							// upper left corner

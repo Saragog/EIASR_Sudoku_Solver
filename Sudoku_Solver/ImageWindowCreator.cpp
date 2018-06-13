@@ -63,12 +63,14 @@ cv::Mat ImageWindowCreator::createImageFromValues(int** values, bool isBackgroun
 	return fullImage;
 }
 
+// Shows the final image with detected digits
 void ImageWindowCreator::showDetectedSudoku(cv::String windowName, int** values)
 {
 	cv::Mat image = createImageFromValues(values, true);
 	showImage(windowName, image);
 }
 
+// Initializes the Mat object for showing the partial / final result of the algorythm
 cv::Mat** ImageWindowCreator::initializeFullImage(bool isBackgroundWhite)
 {
 	cv::Mat** imageParts = new cv::Mat*[9];
@@ -84,6 +86,7 @@ cv::Mat** ImageWindowCreator::initializeFullImage(bool isBackgroundWhite)
 	return imageParts;
 }
 
+// Joins many smaller images into one
 Mat ImageWindowCreator::joinImagesIntoOne(cv::Mat** images) // testing function for showing progress in whole image
 {
 	Mat wholeImage;
@@ -107,11 +110,6 @@ Mat ImageWindowCreator::joinImagesIntoOne(cv::Mat** images) // testing function 
 	return wholeImage;
 
 }
-
-/*
-TODO Zrobic gdzies zmienna przechowujaca wszystkie wielkości obrazu
-Narazie zrobione na sztywno po 100 pikseli natomiast potem trzeba to gdzies static consta
-*/
 
 /*
 	This function draws sudoku edges on the combined image

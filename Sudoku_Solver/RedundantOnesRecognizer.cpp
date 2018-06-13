@@ -1,3 +1,15 @@
+/*
+	Creators Andrzej Dackiewicz, Mateusz Jarzemski
+	This file is a part of a university project Sudoku Solver
+	that was developed as a EIASR project.
+	The aim is to create a software program, that is capable of recognizing sudoku problems
+	read from photographs. The program is using OpenCV library.
+
+	This file describes a class that is used for digit recognition.
+	One recognizer was not enough for proper detection of 9 digits + empty slot.
+	This recognizer is run after the first one and is to additionally recognize the most problematic digits such as ones and sevens.
+*/
+
 #include "stdafx.h"
 #include "RedundantOnesRecognizer.h"
 
@@ -15,6 +27,7 @@ RedundantOnesRecognizer::~RedundantOnesRecognizer()
 {
 }
 
+// Classifies ones
 void RedundantOnesRecognizer::classifyOnes(cv::Mat ** images, int ** sudokuValues)
 {
 	for (int row = 0; row < 9; row++)
@@ -28,6 +41,7 @@ void RedundantOnesRecognizer::classifyOnes(cv::Mat ** images, int ** sudokuValue
 	}
 }
 
+// Preprocesses the sudoku image 
 cv::Mat RedundantOnesRecognizer::preprocessSudokuDigitImage(cv::Mat img)
 {
 	Mat imgResized;
@@ -56,6 +70,7 @@ cv::Mat RedundantOnesRecognizer::preprocessSudokuDigitImage(cv::Mat img)
 	return descriptorMat.clone();
 }
 
+// Training of model
 bool RedundantOnesRecognizer::train(cv::String path)
 {
 	Mat matTrainingImagesFlattened;
@@ -63,7 +78,6 @@ bool RedundantOnesRecognizer::train(cv::String path)
 
 	prepareTraining(&matTrainingImagesFlattened, &matClassificationInts, path);
 
-	// svm = ml::SVM::create();
 	// Set SVM type
 	svm->setType(ml::SVM::C_SVC);
 	// Set SVM Kernel to Radial Basis Function (RBF) 
@@ -72,30 +86,24 @@ bool RedundantOnesRecognizer::train(cv::String path)
 	svm->setC(50.5);
 	// Set parameter Gamma
 	svm->setGamma(0.50625);
-
-
 	// Train SVM on training data 
 	Ptr<ml::TrainData> td = ml::TrainData::create(matTrainingImagesFlattened, ml::ROW_SAMPLE, matClassificationInts);
-	svm->train(td);
-	//svm->trainAuto(td);
-
-
+	//svm->train(td);
+	svm->trainAuto(td);
 	return true;
 }
 
+// Preparation for training
 void RedundantOnesRecognizer::prepareTraining(cv::Mat * trainingImages, cv::Mat * classificationInts, cv::String path)
 {
-
 	prepareOneFolder(trainingImages, classificationInts, path, 0);
 	prepareOneFolder(trainingImages, classificationInts, path, 1);
 	prepareOneFolder(trainingImages, classificationInts, path, 7);
-
-
 }
 
+// Adds data from a specified folder to learning
 void RedundantOnesRecognizer::prepareOneFolder(cv::Mat * trainingImages, cv::Mat * classificationInts, cv::String path, int num)
 {
-
 	char folder = num + '0';
 	String tempPath = path + "\\" + folder + "\\*.png"; 
 	std::vector<String> filenames;
@@ -113,6 +121,4 @@ void RedundantOnesRecognizer::prepareOneFolder(cv::Mat * trainingImages, cv::Mat
 		addTrainingImage(trainingImages, src);
 		classificationInts->push_back(num);
 	}
-
-
 }

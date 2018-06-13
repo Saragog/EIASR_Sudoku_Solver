@@ -23,11 +23,14 @@ SudokuProblemSolver::~SudokuProblemSolver()
 {
 }
 
+// Function that could be implemented in the future
+// It would solve the sudoku problem that was read from an image file
 void SudokuProblemSolver::solveSudokuProblem(int** sudokuProblem)
 {
 
 }
 
+// Function that checks if the sudoku problem is appropriate
 bool SudokuProblemSolver::checkIfSudokuProblemIsAppropriate(int** sudokuProblem)
 {
 	sudokuProblemValues = sudokuProblem;
@@ -35,6 +38,7 @@ bool SudokuProblemSolver::checkIfSudokuProblemIsAppropriate(int** sudokuProblem)
 	else return false;
 }
 
+// Function that checks rows for digit duplications
 bool SudokuProblemSolver::checkRows()
 {
 	for (int rowIndex = 0; rowIndex < 9; rowIndex++)
@@ -42,6 +46,7 @@ bool SudokuProblemSolver::checkRows()
 	return true;
 }
 
+// Function that checks columns for digit duplications
 bool SudokuProblemSolver::checkColumns()
 {
 	for (int columnIndex = 0; columnIndex < 9; columnIndex++)
@@ -49,6 +54,7 @@ bool SudokuProblemSolver::checkColumns()
 	return true;
 }
 
+// Function that checks one row for digit duplications
 bool SudokuProblemSolver::checkColumn(int columnIndex)
 {
 	bool columnUsedValues[9];
@@ -63,6 +69,7 @@ bool SudokuProblemSolver::checkColumn(int columnIndex)
 	return true;
 }
 
+// Function that checks one column for digit duplications
 bool SudokuProblemSolver::checkRow(int rowIndex)
 {
 	bool rowUsedValues[9];
@@ -78,6 +85,7 @@ bool SudokuProblemSolver::checkRow(int rowIndex)
 	return true;
 }
 
+// Function that checks all grids for digit duplications
 bool SudokuProblemSolver::checkGrids()
 {
 	for (int gridIndex = 0; gridIndex < 9; gridIndex++)
@@ -85,6 +93,7 @@ bool SudokuProblemSolver::checkGrids()
 	return true;
 }
 
+// Function that checks one grid for digit duplications
 bool SudokuProblemSolver::checkGrid(int gridIndex)
 {
 	int startingRowIndex = gridIndex / 3, startingColumnIndex = gridIndex % 3;
