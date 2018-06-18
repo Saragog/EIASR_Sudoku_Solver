@@ -11,11 +11,15 @@
 */
 
 #pragma once
+
+#include "PossibilitiesForAField.h"
+
 class SudokuProblemSolver
 {
 public:
 
 	int** sudokuProblemValues;
+	PossibilitiesForAField possibilitiesForFields[9][9];
 
 	SudokuProblemSolver();
 	~SudokuProblemSolver();
@@ -30,5 +34,16 @@ private:
 	bool checkGrids();												// Checks if there are any duplications of digits in any of the grids (3x3)
 	bool checkGrid(int gridIndex);	// index 0 - upper left grid ... index 8 - bottom right grid
 									// from up to down from left to right
+
+	void initializeProbabilities();
+	void crossHatch();
+	void bruteForceTheRest();
+	void findPossibilitiesForOneField(int row, int column);
+	void findPossibilitiesForAllFields();
+
+	PossibilitiesForAField findPossibilitiesForFieldInRow(int row);
+	PossibilitiesForAField findPossibilitiesForFieldInColumn(int column);
+	PossibilitiesForAField findPossibilitiesForFieldInGrid(int row, int column);
+	PossibilitiesForAField sumPossibilitiesForAField(PossibilitiesForAField, PossibilitiesForAField, PossibilitiesForAField);
 };
 

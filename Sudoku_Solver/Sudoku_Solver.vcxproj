@@ -196,6 +196,7 @@
   <ItemGroup>
     <ClInclude Include="DigitRecognizer.h" />
     <ClInclude Include="ImageWindowCreator.h" />
+    <ClInclude Include="PossibilitiesForAField.h" />
     <ClInclude Include="RedundantOnesRecognizer.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
@@ -209,6 +210,7 @@
   <ItemGroup>
     <ClCompile Include="DigitRecognizer.cpp" />
     <ClCompile Include="ImageWindowCreator.cpp" />
+    <ClCompile Include="PossibilitiesForAField.cpp" />
     <ClCompile Include="RedundantOnesRecognizer.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="SudokuProblemSolving">
+      <UniqueIdentifier>{8037f32b-e6b8-45a4-96c1-6a6a32946ad4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Sudoku_Solver.h">
@@ -36,9 +39,6 @@
     <ClInclude Include="SudokuImageReader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SudokuProblemSolver.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="ImageWindowCreator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -47,6 +47,12 @@
     </ClInclude>
     <ClInclude Include="RedundantOnesRecognizer.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PossibilitiesForAField.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SudokuProblemSolver.h">
+      <Filter>SudokuProblemSolving</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -65,9 +71,6 @@
     <ClCompile Include="SudokuImageReader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SudokuProblemSolver.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="ImageWindowCreator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -76,6 +79,12 @@
     </ClCompile>
     <ClCompile Include="RedundantOnesRecognizer.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PossibilitiesForAField.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SudokuProblemSolver.cpp">
+      <Filter>SudokuProblemSolving</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

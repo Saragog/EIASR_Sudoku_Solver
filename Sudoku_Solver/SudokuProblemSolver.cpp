@@ -16,23 +16,89 @@
 
 SudokuProblemSolver::SudokuProblemSolver()
 {
+
 }
 
 
 SudokuProblemSolver::~SudokuProblemSolver()
 {
+
 }
 
 // Function that could be implemented in the future
 // It would solve the sudoku problem that was read from an image file
 void SudokuProblemSolver::solveSudokuProblem(int** sudokuProblem)
 {
+	initializeProbabilities();
+	crossHatch();
+	bruteForceTheRest();
 
 }
+
+void SudokuProblemSolver::initializeProbabilities()
+{
+	for (int row = 0; row < 9; row++)
+		for (int column = 0; column < 9; column++)
+			possibilitiesForFields[row][column] = PossibilitiesForAField();
+}
+
+void SudokuProblemSolver::findPossibilitiesForOneField(int row, int column)
+{
+	PossibilitiesForAField possibilities = PossibilitiesForAField();
+	// TODO sprawdzanie po rzedzie
+	// TODO sprawdzanie po kolumnie
+	// TODO sprawdzanie po gridzie
+	//PossibilitiesForAField possibilitiesInRow = ...
+	
+}
+
+PossibilitiesForAField SudokuProblemSolver::sumPossibilitiesForAField(PossibilitiesForAField possibilitiesInRow,
+	PossibilitiesForAField possibilitiesInColumn,
+	PossibilitiesForAField possibilitiesInGrid)
+{
+	return PossibilitiesForAField();
+}
+
+PossibilitiesForAField SudokuProblemSolver::findPossibilitiesForFieldInRow(int row)
+{
+	// for (int)
+	// TODO
+	return PossibilitiesForAField();
+}
+
+PossibilitiesForAField SudokuProblemSolver::findPossibilitiesForFieldInColumn(int column)
+{
+	// TODO
+	return PossibilitiesForAField();
+}
+
+PossibilitiesForAField SudokuProblemSolver::findPossibilitiesForFieldInGrid(int row, int column)
+{
+	// TODO
+	return PossibilitiesForAField();
+}
+
+void SudokuProblemSolver::findPossibilitiesForAllFields()
+{
+
+}
+
+void SudokuProblemSolver::crossHatch()
+{
+
+}
+
+void SudokuProblemSolver::bruteForceTheRest()
+{
+
+}
+
+
 
 // Function that checks if the sudoku problem is appropriate
 bool SudokuProblemSolver::checkIfSudokuProblemIsAppropriate(int** sudokuProblem)
 {
+	
 	sudokuProblemValues = sudokuProblem;
 	if (checkRows() && checkColumns() && checkGrids()) return true;
 	else return false;
@@ -50,7 +116,7 @@ bool SudokuProblemSolver::checkRows()
 bool SudokuProblemSolver::checkColumns()
 {
 	for (int columnIndex = 0; columnIndex < 9; columnIndex++)
-		if (!checkRow(columnIndex)) return false;
+		if (!checkColumn(columnIndex)) return false;
 	return true;
 }
 
@@ -59,12 +125,14 @@ bool SudokuProblemSolver::checkColumn(int columnIndex)
 {
 	bool columnUsedValues[9];
 	int value;
-	for (int value = 0; value < 9; value++)
-		columnUsedValues[value] = false;
+	for (int valueIndex = 0; valueIndex < 9; valueIndex++)
+		columnUsedValues[valueIndex] = false;
 	for (int rowIndex = 0; rowIndex < 9; rowIndex++)
 	{
 		value = sudokuProblemValues[rowIndex][columnIndex];
-		if (columnUsedValues[value - 1]) return false;
+		if (value != 0)
+			if (columnUsedValues[value - 1]) return false;
+			else columnUsedValues[value - 1] = true;
 	}
 	return true;
 }
@@ -79,8 +147,10 @@ bool SudokuProblemSolver::checkRow(int rowIndex)
 	for (int columnIndex = 0; columnIndex < 9; columnIndex++)
 	{
 		value = sudokuProblemValues[rowIndex][columnIndex];
-		if (rowUsedValues[value - 1]) return false;
-		else rowUsedValues[value - 1] = true;
+		if (value != 0)
+			if (rowUsedValues[value - 1]) return false;
+			else rowUsedValues[value - 1] = true;
+
 	}
 	return true;
 }
@@ -99,11 +169,16 @@ bool SudokuProblemSolver::checkGrid(int gridIndex)
 	int startingRowIndex = gridIndex / 3, startingColumnIndex = gridIndex % 3;
 	int finishingRowIndex = startingRowIndex + 3, finishingColumnIndex = startingColumnIndex + 3;
 	bool gridUsedValues[9];
+	int value;
 	for (int valueIndex = 0; valueIndex < 9; valueIndex++)
 		gridUsedValues[valueIndex] = false;
 	for (int rowIndex = startingRowIndex; rowIndex < finishingRowIndex; rowIndex++)
 		for (int colIndex = startingColumnIndex; colIndex < finishingColumnIndex; colIndex++)
-			if (gridUsedValues[sudokuProblemValues[rowIndex][colIndex] - 1]) return false;
-			else gridUsedValues[sudokuProblemValues[rowIndex][colIndex] - 1] = true;
+		{
+			value = sudokuProblemValues[rowIndex][colIndex];
+			if (value != 0)
+				if (gridUsedValues[value - 1]) return false;
+				else gridUsedValues[value - 1] = true;
+		}
 	return true;
 }

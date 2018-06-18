@@ -38,14 +38,16 @@ void SudokuSolutionFinder::solveProblem(String problemPath)
 	redundantOnesRecognizer.classifyOnes(sudokuParts, sudokuValues);
 	// Detected numbers in original method
 
-	// checking if the detected numbers make sense
-	//if (sudokuProblemSolver.checkIfSudokuProblemIsAppropriate(sudokuValues)) {  // Appropriate values
-	//	ImageWindowCreator::showImage("Classification Result Image1", sudokuValues, true);
-	//}
-	//else { // Inappropriate values detected
-	//	ImageWindowCreator::showImage("Classification Result Image1", sudokuValues, false);
-	//}
 	ImageWindowCreator::showDetectedSudoku("Sudoku problem detected", sudokuValues);
+
+	// checking if the detected numbers make sense
+	if (sudokuProblemSolver.checkIfSudokuProblemIsAppropriate(sudokuValues)) {  // Appropriate values
+		ImageWindowCreator::showImage("Classification Result Image1", sudokuValues, true);
+		sudokuProblemSolver.solveSudokuProblem(sudokuValues);
+	}
+	else { // Inappropriate values detected
+		ImageWindowCreator::showImage("Classification Result Image1", sudokuValues, false);
+	}
 
 	return;
 }
