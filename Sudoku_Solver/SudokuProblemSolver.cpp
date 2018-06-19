@@ -30,9 +30,9 @@ SudokuProblemSolver::~SudokuProblemSolver()
 void SudokuProblemSolver::solveSudokuProblem(int** sudokuProblem)
 {
 	initializeProbabilities();
+	updateAllPossibilities();
 	crossHatch();
 	bruteForceTheRest();
-
 }
 
 void SudokuProblemSolver::initializeProbabilities()
@@ -42,45 +42,37 @@ void SudokuProblemSolver::initializeProbabilities()
 			possibilitiesForFields[row][column] = PossibilitiesForAField();
 }
 
-void SudokuProblemSolver::findPossibilitiesForOneField(int row, int column)
+void SudokuProblemSolver::updateAllPossibilities()
 {
-	PossibilitiesForAField possibilities = PossibilitiesForAField();
-	// TODO sprawdzanie po rzedzie
-	// TODO sprawdzanie po kolumnie
-	// TODO sprawdzanie po gridzie
-	//PossibilitiesForAField possibilitiesInRow = ...
-	
+	for (int row = 0; row < 9; row++)
+		updatePossibilitiesForRow(row);
+	for (int column = 0; column < 9; column++)
+		updatePossibilitiesForColumn(column);
+	for (int gridId = 0; gridId < 9; gridId++)
+		updatePossibilitiesForGrid(gridId);
 }
 
-PossibilitiesForAField SudokuProblemSolver::sumPossibilitiesForAField(PossibilitiesForAField possibilitiesInRow,
-	PossibilitiesForAField possibilitiesInColumn,
-	PossibilitiesForAField possibilitiesInGrid)
+
+void SudokuProblemSolver::updatePossibilitiesForRow(int row)
 {
-	return PossibilitiesForAField();
+	int value;
+	PossibilitiesForAField usedPossibilities = PossibilitiesForAField();
+	for (int column = 0; column < 9; column++)
+	{
+		value = sudokuProblemValues[row][column];
+		if (value != 0)
+			usedPossibilities.removePossibilityForAField(value);
+	}
+	for (int column = 0; column < 9; column++)
+		possibilitiesForFields[row][column].removeManyPossibilitiesForAField(usedPossibilities);
 }
 
-PossibilitiesForAField SudokuProblemSolver::findPossibilitiesForFieldInRow(int row)
+void SudokuProblemSolver::updatePossibilitiesForColumn(int column)
 {
-	// for (int)
-	// TODO
-	return PossibilitiesForAField();
 }
 
-PossibilitiesForAField SudokuProblemSolver::findPossibilitiesForFieldInColumn(int column)
+void SudokuProblemSolver::updatePossibilitiesForGrid(int gridIndex)
 {
-	// TODO
-	return PossibilitiesForAField();
-}
-
-PossibilitiesForAField SudokuProblemSolver::findPossibilitiesForFieldInGrid(int row, int column)
-{
-	// TODO
-	return PossibilitiesForAField();
-}
-
-void SudokuProblemSolver::findPossibilitiesForAllFields()
-{
-
 }
 
 void SudokuProblemSolver::crossHatch()

@@ -5,7 +5,7 @@
 PossibilitiesForAField::PossibilitiesForAField()
 {
 	for (int valueIndex = 0; valueIndex < 9; valueIndex++)
-		possibleValues[valueIndex] = false;
+		possibleValues[valueIndex] = true;
 }
 
 
@@ -18,11 +18,20 @@ PossibilitiesForAField::~PossibilitiesForAField()
 
 bool PossibilitiesForAField::isValuePossible(int value)
 {
-	if (possibleValues[value - 1] == true) return true;
-	return false;
+	return possibleValues[value - 1];
 }
 
-void PossibilitiesForAField::setPossibilityForAField(int value)
+void PossibilitiesForAField::removePossibilityForAField(int value)
 {
-	possibleValues[value - 1] = true;
+	possibleValues[value - 1] = false;
 }
+
+void PossibilitiesForAField::removeManyPossibilitiesForAField(PossibilitiesForAField & usedPossibilities)
+{
+	for (int possibility = 1; possibility <= 9; possibility++)
+	{
+		if (usedPossibilities.isValuePossible(possibility) == false)
+			removePossibilityForAField(possibility);
+	}
+}
+

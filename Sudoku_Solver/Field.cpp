@@ -25,7 +25,7 @@ bool Field::isFieldValueSet()
 
 void Field::setValue(int value)
 {
-	this->isFieldValueSet = true;
+	this->fieldValueSet = true;
 	this->value = value;
 }
 

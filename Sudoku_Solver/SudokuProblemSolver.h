@@ -36,14 +36,12 @@ private:
 									// from up to down from left to right
 
 	void initializeProbabilities();
+	void updateAllPossibilities();
 	void crossHatch();
 	void bruteForceTheRest();
-	void findPossibilitiesForOneField(int row, int column);
-	void findPossibilitiesForAllFields();
 
-	PossibilitiesForAField findPossibilitiesForFieldInRow(int row);
-	PossibilitiesForAField findPossibilitiesForFieldInColumn(int column);
-	PossibilitiesForAField findPossibilitiesForFieldInGrid(int row, int column);
-	PossibilitiesForAField sumPossibilitiesForAField(PossibilitiesForAField, PossibilitiesForAField, PossibilitiesForAField);
+	void updatePossibilitiesForRow(int row);
+	void updatePossibilitiesForColumn(int column);
+	void updatePossibilitiesForGrid(int gridIndex);
 };
 
