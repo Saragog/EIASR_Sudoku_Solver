@@ -48,10 +48,13 @@
     <ClInclude Include="RedundantOnesRecognizer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="PossibilitiesForAField.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="SudokuProblemSolver.h">
+      <Filter>SudokuProblemSolving</Filter>
+    </ClInclude>
+    <ClInclude Include="Field.h">
+      <Filter>SudokuProblemSolving</Filter>
+    </ClInclude>
+    <ClInclude Include="PossibilitiesForAField.h">
       <Filter>SudokuProblemSolving</Filter>
     </ClInclude>
   </ItemGroup>
@@ -80,10 +83,13 @@
     <ClCompile Include="RedundantOnesRecognizer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="PossibilitiesForAField.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="SudokuProblemSolver.cpp">
+      <Filter>SudokuProblemSolving</Filter>
+    </ClCompile>
+    <ClCompile Include="Field.cpp">
+      <Filter>SudokuProblemSolving</Filter>
+    </ClCompile>
+    <ClCompile Include="PossibilitiesForAField.cpp">
       <Filter>SudokuProblemSolving</Filter>
     </ClCompile>
   </ItemGroup>

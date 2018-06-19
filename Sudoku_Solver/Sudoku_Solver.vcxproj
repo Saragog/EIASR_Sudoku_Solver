@@ -195,6 +195,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="DigitRecognizer.h" />
+    <ClInclude Include="Field.h" />
     <ClInclude Include="ImageWindowCreator.h" />
     <ClInclude Include="PossibilitiesForAField.h" />
     <ClInclude Include="RedundantOnesRecognizer.h" />
@@ -209,6 +210,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DigitRecognizer.cpp" />
+    <ClCompile Include="Field.cpp" />
     <ClCompile Include="ImageWindowCreator.cpp" />
     <ClCompile Include="PossibilitiesForAField.cpp" />
     <ClCompile Include="RedundantOnesRecognizer.cpp" />
