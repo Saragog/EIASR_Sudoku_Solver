@@ -7,6 +7,11 @@ Field::Field()
 	initializePossibilities();
 }
 
+Field::Field(int value)
+{
+	initializePossibilities();
+	removePossibility(value);
+}
 
 Field::~Field()
 {

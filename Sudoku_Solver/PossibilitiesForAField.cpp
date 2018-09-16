@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "PossibilitiesForAField.h"
 
+#include <iostream>
 
 PossibilitiesForAField::PossibilitiesForAField()
 {
@@ -13,8 +14,6 @@ PossibilitiesForAField::~PossibilitiesForAField()
 {
 
 }
-
-
 
 bool PossibilitiesForAField::isValuePossible(int value)
 {
@@ -35,3 +34,21 @@ void PossibilitiesForAField::removeManyPossibilitiesForAField(PossibilitiesForAF
 	}
 }
 
+void PossibilitiesForAField::printPossibilities()
+{
+	std::cout << "Wypisuje mozliwosci:\n";
+	for (int possibility = 1; possibility <= 9; possibility++)
+	{
+		if (isValuePossible(possibility))
+			std::cout << possibility;
+	}
+}
+
+void PossibilitiesForAField::resetPossibilities()
+{
+	std::cout << "Resetuje mozliwosci\n";
+	for (int possibility = 0; possibility < 9; possibility++)
+	{
+		possibleValues[possibility] = true;
+	}
+}

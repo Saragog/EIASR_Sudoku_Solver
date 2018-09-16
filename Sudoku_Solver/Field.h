@@ -3,6 +3,7 @@ class Field
 {
 public:
 	Field();
+	Field(int);
 	~Field();
 	bool isFieldValueSet();		  // says whether the field is already set
 	void setValue(int);			  // sets the value of a field

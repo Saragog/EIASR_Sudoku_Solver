@@ -13,6 +13,7 @@
 #include "stdafx.h"
 #include "SudokuProblemSolver.h"
 
+#include <iostream>
 
 SudokuProblemSolver::SudokuProblemSolver()
 {
@@ -29,19 +30,30 @@ SudokuProblemSolver::~SudokuProblemSolver()
 // It would solve the sudoku problem that was read from an image file
 void SudokuProblemSolver::solveSudokuProblem(int** sudokuProblem)
 {
-	initializeProbabilities();
-	updateAllPossibilities();
+	initializeProblem(sudokuProblem);
 	crossHatch();
 	bruteForceTheRest();
 }
 
-void SudokuProblemSolver::initializeProbabilities()
+void SudokuProblemSolver::initializeProblem(int** sudokuProblem)
 {
-	for (int row = 0; row < 9; row++)
-		for (int column = 0; column < 9; column++)
-			possibilitiesForFields[row][column] = PossibilitiesForAField();
+	fields = new Field**[ROWS];
+	for (int row = 0; row < ROWS; row++)
+	{
+		fields[row] = new Field*[COLUMNS];
+		for (int column = 0; column < COLUMNS; column++)
+		{
+			if (sudokuProblem[row][column] != 0)
+				fields[row][column] = new Field(sudokuProblem[row][column]);
+			else
+				fields[row][column] = new Field();
+		}
+	}
 }
 
+
+
+/*
 void SudokuProblemSolver::updateAllPossibilities()
 {
 	for (int row = 0; row < 9; row++)
@@ -55,6 +67,7 @@ void SudokuProblemSolver::updateAllPossibilities()
 
 void SudokuProblemSolver::updatePossibilitiesForRow(int row)
 {
+	std::cout << "Wiersze\n";
 	int value;
 	PossibilitiesForAField usedPossibilities = PossibilitiesForAField();
 	for (int column = 0; column < 9; column++)
@@ -63,9 +76,12 @@ void SudokuProblemSolver::updatePossibilitiesForRow(int row)
 		if (value != 0)
 			usedPossibilities.removePossibilityForAField(value);
 	}
+	std::cout << "Usunieto mozliwosci:";
+	usedPossibilities.printPossibilities();
 	for (int column = 0; column < 9; column++)
 		possibilitiesForFields[row][column].removeManyPossibilitiesForAField(usedPossibilities);
 }
+*/
 
 void SudokuProblemSolver::updatePossibilitiesForColumn(int column)
 {
@@ -77,15 +93,33 @@ void SudokuProblemSolver::updatePossibilitiesForGrid(int gridIndex)
 
 void SudokuProblemSolver::crossHatch()
 {
+	for (int column = 0; column < 9; column++)
+	{
 
+	}
 }
 
+void SudokuProblemSolver::removePossibilityForRow(int possibilityToBeRemoved, int row)
+{
+	for (int columnIndex = 0; columnIndex < COLUMNS; columnIndex++)
+	{
+		fields[row][columnIndex]->
+	}
+}
+
+void SudokuProblemSolver::removePossibilityForColumn(int possibilityToBeRemoved, int column)
+{
+	for (int rowIndex = 0; rowIndex < ROWS; rowIndex++)
+	{
+
+	}
+}
+
+// TODO rename and perform the backtracking algorithm
 void SudokuProblemSolver::bruteForceTheRest()
 {
 
 }
-
-
 
 // Function that checks if the sudoku problem is appropriate
 bool SudokuProblemSolver::checkIfSudokuProblemIsAppropriate(int** sudokuProblem)

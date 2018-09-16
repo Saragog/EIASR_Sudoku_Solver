@@ -13,17 +13,23 @@
 #pragma once
 
 #include "PossibilitiesForAField.h"
+#include "Field.h"
 
 class SudokuProblemSolver
 {
-public:
 
+// TODO later on work on the public / private keywords
+public:
+	static const int ROWS = 8;
+	static const int COLUMNS = 8;
 	int** sudokuProblemValues;
-	PossibilitiesForAField possibilitiesForFields[9][9];
+	Field*** fields;
+	//PossibilitiesForAField possibilitiesForFields[9][9];
 
 	SudokuProblemSolver();
 	~SudokuProblemSolver();
 	void solveSudokuProblem(int** sudokuProblem);					// Solves the sudoku problem, the data of which has already been read from the image
+	void initializeProblem(int** sudokuProblem);
 	bool checkIfSudokuProblemIsAppropriate(int** sudokuProblem);	// Performs simple calculations for checking if given sudoku data is appropriate to be
 																	// a sudoku problem
 private:
@@ -35,9 +41,11 @@ private:
 	bool checkGrid(int gridIndex);	// index 0 - upper left grid ... index 8 - bottom right grid
 									// from up to down from left to right
 
-	void initializeProbabilities();
+	//void initializeProbabilities();
 	void updateAllPossibilities();
 	void crossHatch();
+	void removePossibilityForRow(int, int);
+	void removePossibilityForColumn(int, int);
 	void bruteForceTheRest();
 
 	void updatePossibilitiesForRow(int row);
