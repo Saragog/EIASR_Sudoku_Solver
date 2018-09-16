@@ -87,11 +87,12 @@ void SudokuProblemSolver::initiallyRemovePossibilities()
 
 void SudokuProblemSolver::crossHatch()
 {
-	for (int column = 0; column < COLUMNS; column++)
+
+	for (int row = 0; row < ROWS; row++)
 	{
-		for (int row = 0; row < ROWS; row++)
+		for (int column = 0; column < COLUMNS; column++)
 		{
-			if (fields[row][column]->isThereOnePossibility() == true)
+			if ((!(fields[row][column]->isFieldValueSet())) && (fields[row][column]->isThereOnePossibility()))
 			{
 				fields[row][column]->setTheOnlyPossibility();
 				removePossibilityForRow(fields[row][column]->getValue(), row);

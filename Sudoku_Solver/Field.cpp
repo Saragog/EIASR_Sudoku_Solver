@@ -7,6 +7,7 @@ Field::Field()
 {
 	initializePossibilities();
 	this->value = -1;
+	fieldValueSet = false;
 }
 
 Field::Field(int value)
@@ -44,8 +45,10 @@ bool Field::isThereOnePossibility()
 	for (int possibilityIndex = 0; possibilityIndex < 9; possibilityIndex++)
 	{
 		if (possibilities[possibilityIndex] == true)
+		{
 			if (!onePossibilityFound) onePossibilityFound = true;
-			return false;
+			else return false;
+		}
 	}
 	return onePossibilityFound;
 }
