@@ -202,6 +202,7 @@
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="SudokuImageReader.h" />
+    <ClInclude Include="SudokuProblemGenerator.h" />
     <ClInclude Include="SudokuProblemSolver.h" />
     <ClInclude Include="SudokuSolutionFinder.h" />
     <ClInclude Include="Sudoku_Solver.h" />
@@ -221,6 +222,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="SudokuImageReader.cpp" />
+    <ClCompile Include="SudokuProblemGenerator.cpp" />
     <ClCompile Include="SudokuProblemSolver.cpp" />
     <ClCompile Include="SudokuSolutionFinder.cpp" />
     <ClCompile Include="Sudoku_Solver.cpp" />

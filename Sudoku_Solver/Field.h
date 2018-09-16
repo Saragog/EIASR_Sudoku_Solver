@@ -11,7 +11,7 @@ public:
 	bool isThereAnyPossibility(); // if false is returned then it means that the problem cannot be solved
 	void setTheOnlyPossibility(); // sets the value of a field to the only existing possiblity
 	void removePossibility(int);  // removes a possibility
-
+	int getValue();
 private:
 	bool fieldValueSet;
 	int value;

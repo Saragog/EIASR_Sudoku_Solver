@@ -28,11 +28,24 @@ SudokuProblemSolver::~SudokuProblemSolver()
 
 // Function that could be implemented in the future
 // It would solve the sudoku problem that was read from an image file
-void SudokuProblemSolver::solveSudokuProblem(int** sudokuProblem)
+int** SudokuProblemSolver::solveSudokuProblem(int** sudokuProblem)
 {
 	initializeProblem(sudokuProblem);
+	initiallyRemovePossibilities();
 	crossHatch();
 	bruteForceTheRest();
+
+	int** results = new int*[ROWS];
+	for (int row = 0; row < ROWS; row++)
+	{
+		results[row] = new int[COLUMNS];
+		for (int col = 0; col < COLUMNS; col++)
+		{
+			results[row][col] = fields[row][col]->getValue();
+		}
+	}
+	
+	return results;
 }
 
 void SudokuProblemSolver::initializeProblem(int** sudokuProblem)
@@ -44,74 +57,90 @@ void SudokuProblemSolver::initializeProblem(int** sudokuProblem)
 		for (int column = 0; column < COLUMNS; column++)
 		{
 			if (sudokuProblem[row][column] != 0)
+			{
 				fields[row][column] = new Field(sudokuProblem[row][column]);
+
+			}
 			else
 				fields[row][column] = new Field();
 		}
 	}
 }
 
-
-
-/*
-void SudokuProblemSolver::updateAllPossibilities()
+void SudokuProblemSolver::initiallyRemovePossibilities()
 {
-	for (int row = 0; row < 9; row++)
-		updatePossibilitiesForRow(row);
-	for (int column = 0; column < 9; column++)
-		updatePossibilitiesForColumn(column);
-	for (int gridId = 0; gridId < 9; gridId++)
-		updatePossibilitiesForGrid(gridId);
-}
-
-
-void SudokuProblemSolver::updatePossibilitiesForRow(int row)
-{
-	std::cout << "Wiersze\n";
-	int value;
-	PossibilitiesForAField usedPossibilities = PossibilitiesForAField();
-	for (int column = 0; column < 9; column++)
+	int fieldValue;
+	for (int row = 0; row < ROWS; row++)
 	{
-		value = sudokuProblemValues[row][column];
-		if (value != 0)
-			usedPossibilities.removePossibilityForAField(value);
+		for (int column = 0; column < COLUMNS; column++)
+		{
+			fieldValue = fields[row][column]->getValue();
+			if (fields[row][column]->getValue() != -1)
+			{
+				removePossibilityForRow(fieldValue, row);
+				removePossibilityForColumn(fieldValue, column);
+				removePossibilityForGrid(fieldValue, row, column);
+			}
+		}
 	}
-	std::cout << "Usunieto mozliwosci:";
-	usedPossibilities.printPossibilities();
-	for (int column = 0; column < 9; column++)
-		possibilitiesForFields[row][column].removeManyPossibilitiesForAField(usedPossibilities);
-}
-*/
-
-void SudokuProblemSolver::updatePossibilitiesForColumn(int column)
-{
-}
-
-void SudokuProblemSolver::updatePossibilitiesForGrid(int gridIndex)
-{
 }
 
 void SudokuProblemSolver::crossHatch()
 {
-	for (int column = 0; column < 9; column++)
+	for (int column = 0; column < COLUMNS; column++)
 	{
-
+		for (int row = 0; row < ROWS; row++)
+		{
+			if (fields[row][column]->isThereOnePossibility() == true)
+			{
+				fields[row][column]->setTheOnlyPossibility();
+				removePossibilityForRow(fields[row][column]->getValue(), row);
+				removePossibilityForColumn(fields[row][column]->getValue(), column);
+				removePossibilityForGrid(fields[row][column]->getValue(), row, column);
+				column = 0;
+				row = 0;
+			}
+		}
 	}
 }
 
-void SudokuProblemSolver::removePossibilityForRow(int possibilityToBeRemoved, int row)
+/*
+	Removes possibility that was used in the Row
+*/
+void SudokuProblemSolver::removePossibilityForRow(int possibilityToBeRemoved, int rowIndex)
 {
 	for (int columnIndex = 0; columnIndex < COLUMNS; columnIndex++)
 	{
-		fields[row][columnIndex]->
+		fields[rowIndex][columnIndex]->removePossibility(possibilityToBeRemoved);
 	}
 }
 
-void SudokuProblemSolver::removePossibilityForColumn(int possibilityToBeRemoved, int column)
+/*
+	Removes possibility that was used in the Column
+*/
+void SudokuProblemSolver::removePossibilityForColumn(int possibilityToBeRemoved, int columnIndex)
 {
 	for (int rowIndex = 0; rowIndex < ROWS; rowIndex++)
 	{
+		fields[rowIndex][columnIndex]->removePossibility(possibilityToBeRemoved);
+	}
+}
 
+/*
+	Removes a possibility that was used in the grid.
+*/
+void SudokuProblemSolver::removePossibilityForGrid(int possibilityToBeRemoved, int rowIndex, int columnIndex)
+{
+	int startingRow = rowIndex / GRID_ROWS * 3;
+	int startingColumn = columnIndex / GRID_COLUMNS * 3;
+	int endingRow = startingRow + GRID_ROWS;
+	int endingColumn = startingColumn + GRID_COLUMNS;
+	for (int row = startingRow; row < endingRow; row++)
+	{
+		for (int column = startingColumn; column < endingColumn; column++)
+		{
+			fields[row][column]->removePossibility(possibilityToBeRemoved);
+		}
 	}
 }
 
@@ -120,6 +149,8 @@ void SudokuProblemSolver::bruteForceTheRest()
 {
 
 }
+
+// __________
 
 // Function that checks if the sudoku problem is appropriate
 bool SudokuProblemSolver::checkIfSudokuProblemIsAppropriate(int** sudokuProblem)

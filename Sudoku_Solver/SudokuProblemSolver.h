@@ -20,16 +20,19 @@ class SudokuProblemSolver
 
 // TODO later on work on the public / private keywords
 public:
-	static const int ROWS = 8;
-	static const int COLUMNS = 8;
+	static const int ROWS = 9;
+	static const int COLUMNS = 9;
+	static const int GRID_ROWS = 3;
+	static const int GRID_COLUMNS = 3;
 	int** sudokuProblemValues;
 	Field*** fields;
 	//PossibilitiesForAField possibilitiesForFields[9][9];
 
 	SudokuProblemSolver();
 	~SudokuProblemSolver();
-	void solveSudokuProblem(int** sudokuProblem);					// Solves the sudoku problem, the data of which has already been read from the image
+	int** solveSudokuProblem(int** sudokuProblem);					// Solves the sudoku problem, the data of which has already been read from the image
 	void initializeProblem(int** sudokuProblem);
+	void initiallyRemovePossibilities();
 	bool checkIfSudokuProblemIsAppropriate(int** sudokuProblem);	// Performs simple calculations for checking if given sudoku data is appropriate to be
 																	// a sudoku problem
 private:
@@ -42,14 +45,10 @@ private:
 									// from up to down from left to right
 
 	//void initializeProbabilities();
-	void updateAllPossibilities();
 	void crossHatch();
 	void removePossibilityForRow(int, int);
 	void removePossibilityForColumn(int, int);
+	void removePossibilityForGrid(int, int, int);
 	void bruteForceTheRest();
-
-	void updatePossibilitiesForRow(int row);
-	void updatePossibilitiesForColumn(int column);
-	void updatePossibilitiesForGrid(int gridIndex);
 };
 

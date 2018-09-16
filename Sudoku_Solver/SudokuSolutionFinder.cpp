@@ -13,6 +13,9 @@
 #include "stdafx.h"
 #include "SudokuSolutionFinder.h"
 #include "ImageWindowCreator.h"
+
+#include "SudokuProblemGenerator.h"
+
 using namespace cv;
 
 // The constructor prepares both recognizers
@@ -35,6 +38,7 @@ void SudokuSolutionFinder::solveProblem(String problemPath)
 	Mat** sudokuParts = sudokuImageReader.readSudokuFromImage(problemPath);
 	if (sudokuParts == NULL) return;
 	int** sudokuValues = digitRecognizer.classifyAll(sudokuParts);
+	int** sudokuResult;
 	redundantOnesRecognizer.classifyOnes(sudokuParts, sudokuValues);
 	// Detected numbers in original method
 
@@ -43,7 +47,14 @@ void SudokuSolutionFinder::solveProblem(String problemPath)
 	// checking if the detected numbers make sense
 	if (sudokuProblemSolver.checkIfSudokuProblemIsAppropriate(sudokuValues)) {  // Appropriate values
 		ImageWindowCreator::showImage("Classification Result Image1", sudokuValues, true);
-		sudokuProblemSolver.solveSudokuProblem(sudokuValues);
+
+		// TODO this is for testing, later to be removed
+		// creates a prepared array of sudoku problem appropriate for working on algorithm
+		SudokuProblemGenerator* sudokuProblemGenerator = new SudokuProblemGenerator();
+		sudokuValues = sudokuProblemGenerator->generateSudokuProblem();
+
+		sudokuResult = sudokuProblemSolver.solveSudokuProblem(sudokuValues);
+		ImageWindowCreator::showImage("Algorithm solution image", sudokuResult, true);
 	}
 	else { // Inappropriate values detected
 		ImageWindowCreator::showImage("Classification Result Image1", sudokuValues, false);

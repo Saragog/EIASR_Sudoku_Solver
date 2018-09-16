@@ -1,16 +1,20 @@
 #include "stdafx.h"
 #include "Field.h"
 
+#include <iostream>
 
 Field::Field()
 {
 	initializePossibilities();
+	this->value = -1;
 }
 
 Field::Field(int value)
 {
 	initializePossibilities();
 	removePossibility(value);
+	this->value = value;
+	fieldValueSet = true;
 }
 
 Field::~Field()
@@ -39,7 +43,7 @@ bool Field::isThereOnePossibility()
 	bool onePossibilityFound = false;
 	for (int possibilityIndex = 0; possibilityIndex < 9; possibilityIndex++)
 	{
-		if (possibilities[possibilityIndex])
+		if (possibilities[possibilityIndex] == true)
 			if (!onePossibilityFound) onePossibilityFound = true;
 			return false;
 	}
@@ -50,7 +54,7 @@ bool Field::isThereAnyPossibility()
 {
 	for (int possibilityIndex = 0; possibilityIndex < 9; possibilityIndex++)
 	{
-		if (possibilities[possibilityIndex]) return true;
+		if (possibilities[possibilityIndex] == true) return true;
 	}
 	return false;
 }
@@ -58,7 +62,7 @@ bool Field::isThereAnyPossibility()
 int Field::findPossibility()
 {
 	for (int possibilityIndex = 0; possibilityIndex < 9; possibilityIndex++)
-		if (possibilities[possibilityIndex]) return possibilityIndex+1;
+		if (possibilities[possibilityIndex] == true) return possibilityIndex+1;
 	return 0;
 }
 
@@ -70,5 +74,11 @@ void Field::setTheOnlyPossibility()
 
 void Field::removePossibility(int value)
 {
-	possibilities[value - 1] = false;
+	std::cout << "Value: " << value << "\n";
+	possibilities[value-1] = false;
+}
+
+int Field::getValue()
+{
+	return value;
 }
